@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
           echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
-          test -n "$xVULKAN_SDK_VERSION"
+          test -n "$VULKAN_SDK_VERSION"
 
   setup-windows-without-version:
     runs-on: windows-latest
@@ -36,7 +36,7 @@ jobs:
         run: |
           echo "Vulkan SDK downloaded from '%VULKAN_SDK_URL%'"
           echo "Vulkan SDK parsed app_version '%VULKAN_SDK_VERSION%'"
-          if "%xVULKAN_SDK_VERSION%"=="" exit 1
+          if "%VULKAN_SDK_VERSION%"=="" exit 1
 
   setup-windows-with-version:
     runs-on: windows-latest
@@ -50,4 +50,4 @@ jobs:
         run: |
           echo "Vulkan SDK downloaded from '$env:VULKAN_SDK_URL'"
           echo "Vulkan SDK parsed app_version '$env:VULKAN_SDK_VERSION'"
-          if (!$env:xVULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
+          if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
