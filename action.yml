@@ -10,7 +10,7 @@ runs:
   steps: 
     - name: Download and extract Vulkan SDK
       shell: bash
-    - run: |
+      run: |
         VK_VERSION=${{ inputs.vulkan-version }}
         mkdir vulkan_sdk
         if [ `uname -m` != 'x86_64' ]; then echo 'Error: Not supported platform.' && exit 1; fi
