@@ -11,8 +11,9 @@ runs:
     - name: Download and extract Vulkan SDK
       shell: bash
       run: |
+        echo . ./install_vulkan_sdk.sh "${{ inputs.vulkan-version }}"
         . ./install_vulkan_sdk.sh "${{ inputs.vulkan-version }}"
-        if [ test -n "$VULKAN_SDK" ]; then
+        if [ -n "$VULKAN_SDK" ]; then
           echo "Failed to install Vulkan SDK $VK_VERSION using '$VULKAN_SDK_URL'."
           exit 3
         else
