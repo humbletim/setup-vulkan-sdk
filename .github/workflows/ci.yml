@@ -7,9 +7,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./
-      - run: |
-          echo "using Vulkan SDK version '$VK_VERSION'"
-          test -n "$VK_VERSION"
+      - name: Test Vulkan SDK
+        run: |
+          echo "using Vulkan SDK version '$VULKAN_SDK_VERSION'"
+          test -n "$VULKAN_SDK_VERSION"
 
   setup-ubuntu-with-version:
     runs-on: ubuntu-latest
@@ -18,9 +19,10 @@ jobs:
       - uses: ./
         with:
           vulkan-version: 1.2.162.0
-      - run: |
-          echo "using Vulkan SDK version '$VK_VERSION'"
-          test -n "$VK_VERSION"
+      - name: Test Vulkan SDK
+        run: |
+          echo "using Vulkan SDK version '$VULKAN_SDK_VERSION'"
+          test -n "$VULKAN_SDK_VERSION"
 
   setup-windows-with-version:
     runs-on: windows-latest
@@ -29,15 +31,17 @@ jobs:
       - uses: ./
         with:
           vulkan-version: 1.2.162.0
-      - run: |
-          echo "using Vulkan SDK version '$VK_VERSION'"
-          test -n "$VK_VERSION"
+      - name: Test Vulkan SDK
+        run: |
+          echo "using Vulkan SDK version '$VULKAN_SDK_VERSION'"
+          test -n "$VULKAN_SDK_VERSION"
 
   setup-windows-without-version:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./
-      - run: |
-          echo "using Vulkan SDK version '$VK_VERSION'"
-          test -n "$VK_VERSION"
+      - name: Test Vulkan SDK
+        run: |
+          echo "using Vulkan SDK version '$VULKAN_SDK_VERSION'"
+          test -n "$VULKAN_SDK_VERSION"
