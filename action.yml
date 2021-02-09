@@ -46,7 +46,7 @@ runs:
              # rm $VULKAN_SDK_FILE
             ;;
         esac
-        VULKAN_SDK_VERSION=$(cat `find vulkan_sdk -name VkLayer_api_dump.json` | grep api_version | sed -e 's/^.*: "//;s/",//;')
+        VULKAN_SDK_VERSION=$(cat `find vulkan_sdk -name VkLayer_api_dump.json` | grep api_version | sed -e 's/^.*: "//;s/",//;' | head -1)
         echo "VULKAN_SDK_URL=$VULKAN_SDK_URL" >> $GITHUB_ENV
         echo "VULKAN_SDK_ROOT=$VULKAN_SDK_ROOT" >> $GITHUB_ENV
         echo "VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION" >> $GITHUB_ENV
