@@ -9,7 +9,8 @@ jobs:
       - uses: ./
       - name: Test Vulkan SDK
         run: |
-          echo "using Vulkan SDK version '$VULKAN_SDK_VERSION'"
+          echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
+          echo "Vulkan SDK detected app_version '$VULKAN_SDK_VERSION'"
           test -n "$VULKAN_SDK_VERSION"
 
   setup-ubuntu-with-version:
@@ -21,7 +22,8 @@ jobs:
           vulkan-version: 1.2.162.0
       - name: Test Vulkan SDK
         run: |
-          echo "using Vulkan SDK version '$VULKAN_SDK_VERSION'"
+          echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
+          echo "Vulkan SDK detected app_version '$VULKAN_SDK_VERSION'"
           test -n "$VULKAN_SDK_VERSION"
 
   setup-windows-with-version:
@@ -33,7 +35,8 @@ jobs:
           vulkan-version: 1.2.162.0
       - name: Test Vulkan SDK
         run: |
-          echo "using Vulkan SDK version '$VULKAN_SDK_VERSION'"
+          echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
+          echo "Vulkan SDK detected app_version '$VULKAN_SDK_VERSION'"
           test -n "$VULKAN_SDK_VERSION"
 
   setup-windows-without-version:
@@ -43,5 +46,6 @@ jobs:
       - uses: ./
       - name: Test Vulkan SDK
         run: |
-          echo "using Vulkan SDK version '$VULKAN_SDK_VERSION'"
+          echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
+          echo "Vulkan SDK detected app_version '$VULKAN_SDK_VERSION'"
           test -n "$VULKAN_SDK_VERSION"
