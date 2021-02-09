@@ -5,21 +5,46 @@ inputs:
     description: 'specify a Vulkan SDK release version, e.g. 1.2.162.1'
     default: 'latest'
     required: false
+  vulkan-version-linux:
+    description: 'specify a linux-specific Vulkan SDK release version, e.g. 1.2.162.1'
+    default: ''
+    required: false
+  vulkan-version-windows:
+    description: 'specify a windows-specific Vulkan SDK release version, e.g. 1.2.162.1'
+    default: ''
+    required: false
 runs:
   using: "composite"
   steps: 
+
+    - name: Determine requested SDK Version
+      shell: bash
+      run: |
+        case `uname -s` in
+          Linux)
+            echo VK_VERSION=${{ inputs.vulkan-version-linux }} >> $GITHUB_ENV
+            ;;
+          Darwin)
+            ;;
+          *) # Windows
+            echo VK_VERSION=${{ inputs.vulkan-version-windows }} >> $GITHUB_ENV
+            ;;
+        esac
+
     - name: Download and extract Vulkan SDK
       shell: bash
       run: |
-        echo . ./install_vulkan_sdk.sh "${{ inputs.vulkan-version }}"
-        . ./install_vulkan_sdk.sh "${{ inputs.vulkan-version }}"
-        if [ -n "$VULKAN_SDK" ]; then
-          echo "Failed to install Vulkan SDK $VK_VERSION using '$VULKAN_SDK_URL'."
+        VK_VERSION=${VK_VERSION:-${{ inputs.vulkan-version }}}
+        echo "VK_VERSION=VK_VERSION" >> $GITHUB_ENV
+        echo "requested SDK version is $VK_VERSION" >&2
+        ./install_vulkan_sdk.sh $VK_VERSION | tee -a $GITHUB_ENV
+
+    - name: Verify Vulkan SDK installation
+      shell: bash
+      run: |
+        if [ -z "$VULKAN_SDK" ]; then
+          echo "Failed to install Vulkan SDK ${{ inputs.vulkan-version }} using '$VULKAN_SDK_URL'."
           exit 3
         else
-          echo "Vulkan SDK $VK_VERSION ($VULKAN_SDK_VERSION) successfully installed using '$VULKAN_SDK_URL'."
+          echo "Vulkan SDK ${{ inputs.vulkan-version }} ($VULKAN_SDK_VERSION) successfully installed using '$VULKAN_SDK_URL'."
         fi
-        echo "VULKAN_SDK_URL=$VULKAN_SDK_URL" >> $GITHUB_ENV
-        echo "VULKAN_SDK_ROOT=$VULKAN_SDK_ROOT" >> $GITHUB_ENV
-        echo "VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION" >> $GITHUB_ENV
-        echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV

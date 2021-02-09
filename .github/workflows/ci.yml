@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          vulkan-version: 1.2.154.1
+          vulkan-version: 1.2.154.0
       - name: Test Vulkan SDK Install
         run: |
           echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
@@ -51,3 +51,22 @@ jobs:
           echo "Vulkan SDK downloaded from '$env:VULKAN_SDK_URL'"
           echo "Vulkan SDK parsed app_version '$env:VULKAN_SDK_VERSION'"
           if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
+
+  setup-both-with-versions:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-version-linux: 1.2.154.0
+          vulkan-version-windows: 1.2.154.1
+      - name: Test Vulkan SDK Install
+        shell: bash
+        run: |
+          echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
+          echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
+          test -n "$VULKAN_SDK_VERSION"
+
