@@ -37,7 +37,7 @@ runs:
         VK_VERSION=${VK_VERSION:-${{ inputs.vulkan-version }}}
         echo "VK_VERSION=VK_VERSION" >> $GITHUB_ENV
         echo "requested SDK version is $VK_VERSION" >&2
-        ${{ github.action_path }}/install_vulkan_sdk.sh $VK_VERSION | tee -a $GITHUB_ENV
+        $GITHUB_ACTION_PATH/install_vulkan_sdk.sh $VK_VERSION | tee -a $GITHUB_ENV
 
     - name: Verify Vulkan SDK installation
       shell: bash
