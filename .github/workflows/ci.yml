@@ -7,11 +7,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./
-      - name: Test Vulkan SDK
+      - name: Test Vulkan SDK Install
         run: |
           echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
-          echo "Vulkan SDK detected app_version '$VULKAN_SDK_VERSION'"
-          test -n "$xVULKAN_SDK_VERSION"
+          echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
+          test -n "$VULKAN_SDK_VERSION"
 
   setup-ubuntu-with-version:
     runs-on: ubuntu-latest
@@ -19,12 +19,24 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          vulkan-version: 1.2.162.0
-      - name: Test Vulkan SDK
+          vulkan-version: 1.2.154.1
+      - name: Test Vulkan SDK Install
         run: |
           echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
-          echo "Vulkan SDK detected app_version '$VULKAN_SDK_VERSION'"
+          echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
           test -n "$xVULKAN_SDK_VERSION"
+
+  setup-windows-without-version:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+      - name: Test Vulkan SDK Install
+        shell: cmd
+        run: |
+          echo "Vulkan SDK downloaded from '%VULKAN_SDK_URL%'"
+          echo "Vulkan SDK parsed app_version '%VULKAN_SDK_VERSION%'"
+          if "%xVULKAN_SDK_VERSION%"=="" exit 1
 
   setup-windows-with-version:
     runs-on: windows-latest
@@ -32,22 +44,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          vulkan-version: 1.2.162.0
-      - name: Test Vulkan SDK
+          vulkan-version: 1.2.154.1
+      - name: Test Vulkan SDK Install
         shell: powershell
         run: |
           echo "Vulkan SDK downloaded from '$env:VULKAN_SDK_URL'"
-          echo "Vulkan SDK detected app_version '$env:VULKAN_SDK_VERSION'"
+          echo "Vulkan SDK parsed app_version '$env:VULKAN_SDK_VERSION'"
           if (!$env:xVULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
-
-  setup-windows-without-version:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./
-      - name: Test Vulkan SDK
-        shell: cmd
-        run: |
-          echo "Vulkan SDK downloaded from '%VULKAN_SDK_URL%'"
-          echo "Vulkan SDK detected app_version '%VULKAN_SDK_VERSION%'"
-          if "%xVULKAN_SDK_VERSION%"=="" exit 1
