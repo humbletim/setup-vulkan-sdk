@@ -11,14 +11,14 @@ runs:
     - name: Download and extract Vulkan SDK
       shell: bash
       run: |
-        . ./install_vulkan_sdk.sh
-        echo "VULKAN_SDK_URL=$VULKAN_SDK_URL" >> $GITHUB_ENV
-        echo "VULKAN_SDK_ROOT=$VULKAN_SDK_ROOT" >> $GITHUB_ENV
-        echo "VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION" >> $GITHUB_ENV
-        echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV
+        . ./install_vulkan_sdk.sh "${{ inputs.vulkan-version }}"
         if [ test -n "$VULKAN_SDK" ]; then
           echo "Failed to install Vulkan SDK $VK_VERSION using '$VULKAN_SDK_URL'."
           exit 3
         else
           echo "Vulkan SDK $VK_VERSION ($VULKAN_SDK_VERSION) successfully installed using '$VULKAN_SDK_URL'."
         fi
+        echo "VULKAN_SDK_URL=$VULKAN_SDK_URL" >> $GITHUB_ENV
+        echo "VULKAN_SDK_ROOT=$VULKAN_SDK_ROOT" >> $GITHUB_ENV
+        echo "VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION" >> $GITHUB_ENV
+        echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV
