@@ -25,10 +25,8 @@ runs:
              fi
              wget -q -O $VULKAN_SDK_FILE $VULKAN_SDK_URL
              tar -C vulkan_sdk -zxf $VULKAN_SDK_FILE
-             VULKAN_SDK=$(ls vulkan_sdk/*/x86_64 -d)
+             VULKAN_SDK=$PWD/$(ls vulkan_sdk/*/x86_64 -d)
              VULKAN_SDK_ROOT=$PWD/vulkan_sdk/`echo $(cd vulkan_sdk && ls)`
-             echo "VULKAN_SDK=$VULKAN_SDK" | tee -a $GITHUB_ENV
-             echo "VULKAN_SDK_ROOT=$VULKAN_SDK_ROOT" | tee -a $GITHUB_ENV
              # rm $VULKAN_SDK_FILE
             ;;
           Darwin)
@@ -43,10 +41,13 @@ runs:
              fi
              curl -s $VULKAN_SDK_URL -o $VULKAN_SDK_FILE
              7z x -aoa ./$VULKAN_SDK_FILE -ovulkan_sdk > nul
-             echo "VULKAN_SDK_ROOT=$PWD/vulkan_sdk" | tee -a $GITHUB_ENV
-             echo "VULKAN_SDK=$PWD/vulkan_sdk" | tee -a $GITHUB_ENV
+             VULKAN_SDK_ROOT=$PWD/vulkan_sdk
+             VULKAN_SDK=$PWD/vulkan_sdk
              # rm $VULKAN_SDK_FILE
             ;;
         esac
         VULKAN_SDK_VERSION=$(cat `find vulkan_sdk -name VkLayer_api_dump.json` | grep api_version | sed -e 's/^.*: "//;s/",//;')
-        echo "VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION" | tee -a $GITHUB_ENV
+        echo "VULKAN_SDK_URL=$VULKAN_SDK_URL" >> $GITHUB_ENV
+        echo "VULKAN_SDK_ROOT=$VULKAN_SDK_ROOT" >> $GITHUB_ENV
+        echo "VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION" >> $GITHUB_ENV
+        echo "VULKAN_SDK=$VULKAN_SDK" >> $GITHUB_ENV
