@@ -27,6 +27,22 @@ function get_windows_url() {
   fi
 }
 
+function get_linux_filename() {
+  if [ "$1" == "latest" ]; then
+    echo vulkan-sdk.tar.gz
+  else
+    echo vulkansdk-linux-x86_64-$1.tar.gz
+  fi
+}
+
+function get_linux_url() {
+  if [ "$1" == "latest" ]; then
+    echo https://sdk.lunarg.com/sdk/download/latest/linux/$(get_linux_filename $1)?u=
+  else
+    echo https://sdk.lunarg.com/sdk/download/$1/linux/$(get_linux_filename $1)
+  fi
+}
+
 function fetch_curl() {
   local VULKAN_SDK_URL=$1
   local VULKAN_SDK_FILE=$2
@@ -45,22 +61,6 @@ function fetch_curl() {
     ls -l $VULKAN_SDK_FILE >&2
     file $VULKAN_SDK_FILE >&2
     exit 3
-  fi
-}
-
-function get_linux_filename() {
-  if [ "$1" == "latest" ]; then
-    echo vulkan-sdk.tar.gz
-  else
-    echo vulkansdk-linux-x86_64-$1.tar.gz
-  fi
-}
-
-function get_linux_url() {
-  if [ "$1" == "latest" ]; then
-    echo https://sdk.lunarg.com/sdk/download/latest/linux/$(get_linux_filename $1)?u=
-  else
-    echo https://sdk.lunarg.com/sdk/download/$1/linux/$(get_linux_filename $1)
   fi
 }
 
