@@ -2,6 +2,24 @@ name: Setup
 on: [push]
 
 jobs:
+  setup-both-with-versions:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-version-linux: 1.2.154.0
+          vulkan-version-windows: latest
+      - name: Test Vulkan SDK Install
+        shell: bash
+        run: |
+          echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
+          echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
+          test -n "$VULKAN_SDK_VERSION"
+
 #   setup-ubuntu-without-version:
 #     if: false # skip
 #     runs-on: ubuntu-16.04
@@ -14,18 +32,18 @@ jobs:
 #           echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
 #           test -n "$VULKAN_SDK_VERSION"
 
-  setup-ubuntu-with-version:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./
-        with:
-          vulkan-version: 1.2.162.0
-      - name: Test Vulkan SDK Install
-        run: |
-          echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
-          echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
-          test -n "$VULKAN_SDK_VERSION"
+#   setup-ubuntu-with-version:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - uses: ./
+#         with:
+#           vulkan-version: 1.2.162.0
+#       - name: Test Vulkan SDK Install
+#         run: |
+#           echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
+#           echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
+#           test -n "$VULKAN_SDK_VERSION"
 
 #   setup-windows-without-version:
 #     if: false # skip
@@ -55,20 +73,3 @@ jobs:
 #           echo "Vulkan SDK parsed app_version '$env:VULKAN_SDK_VERSION'"
 #           if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
 
-  setup-both-with-versions:
-    strategy:
-      matrix:
-        runs-on: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.runs-on }}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./
-        with:
-          vulkan-version-linux: 1.2.154.0
-          vulkan-version-windows: latest
-      - name: Test Vulkan SDK Install
-        shell: bash
-        run: |
-          echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
-          echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
-          test -n "$VULKAN_SDK_VERSION"
