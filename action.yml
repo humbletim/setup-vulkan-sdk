@@ -19,22 +19,25 @@ inputs:
 runs:
   using: "composite"
   steps: 
-
-    - name: Determine requested SDK Version
+    - name: Install SDK Dependencies
       shell: bash
       run: |
         case `uname -s` in
           Linux)
+            sudo apt-get install -y ninja-build libwayland-dev libxrandr-dev 
             echo VK_VERSION=${{ inputs.vulkan-version-linux }} >> $GITHUB_ENV
             ;;
           Darwin)
             ;;
           *) # Windows
+            curl -L -o ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
+            unzip ninja-win.zip
+            echo $PWD >> $GITHUB_PATH
             echo VK_VERSION=${{ inputs.vulkan-version-windows }} >> $GITHUB_ENV
             ;;
         esac
 
-    - name: Download and extract Vulkan SDK
+    - name: Build Vulkan SDK
       shell: bash
       run: |
         VK_VERSION=${VK_VERSION:-${{ inputs.vulkan-version }}}
@@ -46,8 +49,8 @@ runs:
       shell: bash
       run: |
         if [ -z "$VULKAN_SDK" ]; then
-          echo "Failed to install Vulkan SDK ${{ inputs.vulkan-version }} using '$VULKAN_SDK_URL'."
+          echo "Failed to install Vulkan SDK $VK_VERSION."
           exit 3
         else
-          echo "Vulkan SDK ${{ inputs.vulkan-version }} ($VULKAN_SDK_VERSION) successfully installed using '$VULKAN_SDK_URL'."
+          echo "Vulkan SDK $VK_VERSION ($VULKAN_SDK_VERSION) successfully installed."
         fi

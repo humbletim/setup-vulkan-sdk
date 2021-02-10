@@ -4,7 +4,7 @@
   <a href="https://github.com/humbletim/setup-vulkan-sdk"><img alt="GitHub Actions status" src="https://github.com/humbletim/setup-vulkan-sdk/workflows/Setup/badge.svg"></a>
 </p>
 
-This action installs the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) and makes it available to build tools through the `VULKAN_SDK` environment variable.
+This action builds the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) from source and makes it available to build tools through the `VULKAN_SDK` environment variable.
 
 # Usage
 
@@ -16,13 +16,13 @@ To install the latest Vulkan SDK:
    uses: humbletim/setup-vulkan-sdk@v1.1
 ```
 
-*note: currently this action supports x64-windows and x64-linux environments (see [install_vulkan_sdk.sh](install_vulkan_sdk.sh) for details)*
+*note: currently this action has only been tested on windows and linux x64 environments
 
 ## Parameters
 
 - `vulkan-version`:
-*(Optional)* The Vulkan SDK version to be installed. Default: `latest`
-    - available SDK versions: https://vulkan.lunarg.com/sdk/home
+*(Optional)* The Vulkan SDK release to be built. Default: `latest`
+    - Available SDK versions: https://vulkan.lunarg.com/sdk/home
 
 ## To specifying an exact version:
 ```yaml
