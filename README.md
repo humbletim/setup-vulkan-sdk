@@ -4,33 +4,37 @@
   <a href="https://github.com/humbletim/setup-vulkan-sdk"><img alt="GitHub Actions status" src="https://github.com/humbletim/setup-vulkan-sdk/workflows/Setup/badge.svg"></a>
 </p>
 
-This action installs the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) and configures the `VULKAN_SDK` environment variable.
+This action installs the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) and makes it available to build tools through the `VULKAN_SDK` environment variable export.
 
 # Usage
 
 See [action.yml](action.yml)
 
-To use the latest Vulkan SDK version:
+To install the latest Vulkan SDK:
 ```yaml
-uses: humbletim/setup-vulkan-sdk@v1
-```
-... which is equivalent to:
-```yaml
-uses: humbletim/setup-vulkan-sdk@v1
-with:
-  vulkan-version: latest
+  -name: Install Vulkan SDK
+   uses: humbletim/setup-vulkan-sdk@v1.1
 ```
 
-Or specify an exact Vulkan SDK version ([see available versions here](https://vulkan.lunarg.com/sdk/home)):
+*note: currently this action only supports x64-windows and x64-linux environments (see [install_vulkan_sdk.sh](install_vulkan_sdk.sh) for lower level details)*
+
+## Parameters
+
+- `vulkan-version`:
+*(Optional)* The Vulkan SDK version to be installed. Default: `latest`
+    - available SDK versions per os: https://vulkan.lunarg.com/sdk/home
+
+## To specifying an exact SDK version:
 ```yaml
-uses: humbletim/setup-vulkan-sdk@v1
-with:
-  vulkan-version: 1.2.161.1
+  -name: Install Vulkan SDK
+   uses: humbletim/setup-vulkan-sdk@v1.1
+   with:
+     vulkan-version: 1.2.161.1
 ```
 
-NOTE: currently this aciton only supports windows and linux (if someone needs mac please let me know)
+## To specify os-specific SDK versions:
 
-NOTE 2: not all Vulkan SDK releases are available for all platforms -- if you need to differentiate by platform the recommended approach is use separate jobs (which can then have separate `vulkan-version`s). However, it is also possible to specify os-specific SDK versions by adding (`-linux`|`-windows`) suffix to the version key:
+Since not all Vulkan SDK releases are available for all operating systems it is recommended to use separate jobs when targeting multiple platforms (each using its own action reference and `vulkan-version`). However, it is also possible to specify dual SDK versions by appending `-linux` or `-windows` to the version key:
 ```yaml
   setup-both-with-versions:
     strategy:
@@ -39,7 +43,8 @@ NOTE 2: not all Vulkan SDK releases are available for all platforms -- if you ne
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v2
-      - uses: humbletim/setup-vulkan-sdk@v1
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.1
         with:
           vulkan-version-linux: 1.2.154.0
           vulkan-version-windows: 1.2.154.1
@@ -48,5 +53,5 @@ NOTE 2: not all Vulkan SDK releases are available for all platforms -- if you ne
         run: |
           echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
           echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
-          test -n "$VULKAN_SDK_VERSION"
+          echo "Exported VULKAN_SDK=$VULKAN_SDK"
 ```
