@@ -2,23 +2,23 @@ name: Setup
 on: [push]
 
 jobs:
-  # setup-both-with-versions:
-  #   strategy:
-  #     matrix:
-  #       runs-on: [ubuntu-latest, windows-latest]
-  #   runs-on: ${{ matrix.runs-on }}
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: ./
-  #       with:
-  #         vulkan-version-linux: 1.2.154.0
-  #         vulkan-version-windows: latest
-  #     - name: Test Vulkan SDK Install
-  #       shell: bash
-  #       run: |
-  #         echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
-  #         echo "VULKAN_SDK=='$VULKAN_SDK'"
-  #         test -n "$VULKAN_SDK_VERSION"
+  setup-both-with-versions:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-version-linux: 1.2.154.0
+          vulkan-version-windows: latest
+      - name: Test Vulkan SDK Install
+        shell: bash
+        run: |
+          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+          echo "VULKAN_SDK=='$VULKAN_SDK'"
+          test -n "$VULKAN_SDK_VERSION"
 
   setup-ubuntu-without-version:
     runs-on: ubuntu-16.04
@@ -31,27 +31,23 @@ jobs:
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           test -n "$VULKAN_SDK_VERSION"
 
-  # setup-ubuntu-with-version:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: ./
-  #       with:
-  #         vulkan-version: 1.2.162.0
-  #     - name: Test Vulkan SDK Install
-  #       run: |
-  #         echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
-  #         echo "VULKAN_SDK=='$VULKAN_SDK'"
-  #         test -n "$VULKAN_SDK_VERSION"
-  # 
+  setup-ubuntu-with-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-version: 1.2.162.0
+      - name: Test Vulkan SDK Install
+        run: |
+          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+          echo "VULKAN_SDK=='$VULKAN_SDK'"
+          test -n "$VULKAN_SDK_VERSION"
+
   setup-windows-without-version:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
-      #   with:
-      #     limit-access-to-actor: true
       - uses: ./
       - name: Test Vulkan SDK Install
         shell: cmd
@@ -59,16 +55,16 @@ jobs:
           echo "Vulkan SDK Version=='%VULKAN_SDK_VERSION%'"
           echo "VULKAN_SDK=='%VULKAN_SDK%'"
           if "%VULKAN_SDK_VERSION%"=="" exit 1
-  # 
-  # setup-windows-with-version:
-  #   runs-on: windows-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: ./
-  #       with:
-  #         vulkan-version: 1.2.154.1
-  #     - name: Test Vulkan SDK Install
-  #       shell: powershell
-  #       run: |
-  #         echo "Vulkan SDK Version=='$env:VULKAN_SDK_VERSION'"
-  #         if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
+
+  setup-windows-with-version:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-version: 1.2.154.0
+      - name: Test Vulkan SDK Install
+        shell: powershell
+        run: |
+          echo "Vulkan SDK Version=='$env:VULKAN_SDK_VERSION'"
+          if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
