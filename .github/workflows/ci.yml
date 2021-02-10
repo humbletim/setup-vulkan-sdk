@@ -3,6 +3,7 @@ on: [push]
 
 jobs:
   setup-ubuntu-without-version:
+    if: false # skip
     runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@v2
@@ -27,6 +28,7 @@ jobs:
           test -n "$VULKAN_SDK_VERSION"
 
   setup-windows-without-version:
+    if: false # skip
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -62,11 +64,10 @@ jobs:
       - uses: ./
         with:
           vulkan-version-linux: 1.2.154.0
-          vulkan-version-windows: 1.2.154.1
+          vulkan-version-windows: latest
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
           echo "Vulkan SDK downloaded from '$VULKAN_SDK_URL'"
           echo "Vulkan SDK parsed app_version '$VULKAN_SDK_VERSION'"
           test -n "$VULKAN_SDK_VERSION"
-
