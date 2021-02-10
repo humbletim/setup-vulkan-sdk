@@ -1,5 +1,5 @@
-name: 'Install Vulkan SDK'
-description: 'Installs the Vulkan SDK and sets the VULKAN_SDK environment variable'
+name: 'Setup Vulkan SDK'
+description: 'Configures the core Vulkan SDK and VULKAN_SDK environment variable for use with CI builds.'
 branding:
   icon: 'play'  
   color: 'green'  
@@ -19,7 +19,7 @@ inputs:
 runs:
   using: "composite"
   steps: 
-    - name: Install SDK Dependencies
+    - name: Install Vulkan SDK Build Dependencies
       shell: bash
       run: |
         case `uname -s` in
@@ -30,19 +30,20 @@ runs:
           Darwin)
             ;;
           *) # Windows
-            curl -L -o ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
-            unzip ninja-win.zip
-            echo $PWD >> $GITHUB_PATH
+            mkdir _vulkan_tmp
+            curl -L -o _vulkan_tmp/ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
+            unzip -d _vulkan_tmp _vulkan_tmp/ninja-win.zip
+            echo $PWD/_vulkan_tmp >> $GITHUB_PATH
             echo VK_VERSION=${{ inputs.vulkan-version-windows }} >> $GITHUB_ENV
             ;;
         esac
 
-    - name: Build Vulkan SDK
+    - name: Clone and Build Vulkan SDK
       shell: bash
       run: |
         VK_VERSION=${VK_VERSION:-${{ inputs.vulkan-version }}}
-        echo "VK_VERSION=VK_VERSION" >> $GITHUB_ENV
-        echo "requested SDK version is $VK_VERSION" >&2
+        echo "VK_VERSION=$VK_VERSION" >> $GITHUB_ENV
+        echo "requested SDK version is $VK_VERSION"
         $GITHUB_ACTION_PATH/install_vulkan_sdk.sh $VK_VERSION | tee -a $GITHUB_ENV
 
     - name: Verify Vulkan SDK installation
@@ -52,5 +53,6 @@ runs:
           echo "Failed to install Vulkan SDK $VK_VERSION."
           exit 3
         else
-          echo "Vulkan SDK $VK_VERSION ($VULKAN_SDK_VERSION) successfully installed."
+          echo "Vulkan SDK $VK_VERSION ($VULKAN_SDK_VERSION) successfully installed to $VULKAN_SDK."
         fi
+        test -d _vulkan_tmp && rm -rf _vulkan_tmp || true
