@@ -27,7 +27,7 @@ function get_windows_url() {
   fi
 }
 
-function fetch_windows() {
+function fetch_curl() {
   local VULKAN_SDK_URL=$1
   local VULKAN_SDK_FILE=$2
   if [ -s $VULKAN_SDK_FILE ]; then
@@ -64,7 +64,7 @@ function get_linux_url() {
   fi
 }
 
-function fetch_linux() {
+function fetch_wget() {
   local VULKAN_SDK_URL=$1
   local VULKAN_SDK_FILE=$2
   if [ -s $VULKAN_SDK_FILE ]; then
@@ -95,7 +95,7 @@ case `uname -s` in
   Linux)
     export VULKAN_SDK_URL=$(get_linux_url $VK_VERSION)
     export VULKAN_SDK_FILE=$(get_linux_filename $VK_VERSION)
-    fetch_linux $VULKAN_SDK_URL $VULKAN_SDK_FILE
+    fetch_curl $VULKAN_SDK_URL $VULKAN_SDK_FILE
     if [ "$(ls -A vulkan_sdk)" == "" ]; then
         ls -lh $VULKAN_SDK_FILE >&2
         echo "extracting..."  >&2
@@ -115,7 +115,7 @@ case `uname -s` in
   *) # Windows
     export VULKAN_SDK_FILE=$(get_windows_filename $VK_VERSION)
     export VULKAN_SDK_URL=$(get_windows_url $VK_VERSION)
-    fetch_windows $VULKAN_SDK_URL $VULKAN_SDK_FILE
+    fetch_curl $VULKAN_SDK_URL $VULKAN_SDK_FILE
     if [ "$(ls -A vulkan_sdk)" == "" ]; then
       ls -lh $VULKAN_SDK_FILE >&2
       echo "extracting..."  >&2
