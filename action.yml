@@ -1,8 +1,8 @@
 name: 'Setup Vulkan SDK'
-description: 'Configures the core Vulkan SDK and VULKAN_SDK environment variable for use with CI builds.'
+description: 'Configures the core Vulkan SDK and sets VULKAN_SDK environment variable.'
 branding:
   icon: 'play'  
-  color: 'green'  
+  color: 'red'  
 inputs:
   vulkan-version:
     description: 'specify a Vulkan SDK release version, e.g. 1.2.162.1'
@@ -19,7 +19,7 @@ inputs:
 runs:
   using: "composite"
   steps: 
-    - name: Install Vulkan SDK Build Dependencies
+    - name: Install Build Dependencies
       shell: bash
       run: |
         case `uname -s` in
@@ -46,7 +46,7 @@ runs:
         echo "requested SDK version is $VK_VERSION"
         $GITHUB_ACTION_PATH/install_vulkan_sdk.sh $VK_VERSION | tee -a $GITHUB_ENV
 
-    - name: Verify Vulkan SDK installation
+    - name: Finalize SDK installation
       shell: bash
       run: |
         if [ -z "$VULKAN_SDK" ]; then
