@@ -34,14 +34,8 @@ case `uname -s` in
 esac
 echo os=$os >&2
 
-# function to compate version number
-function version_gt() { test "$(echo "$@" | tr " " "n" | sort -V | head -n 1)" != "$1"; }
-function version_le() { test "$(echo "$@" | tr " " "n" | sort -V | head -n 1)" == "$1"; }
-function version_lt() { test "$(echo "$@" | tr " " "n" | sort -rV | head -n 1)" != "$1"; }
-function version_ge() { test "$(echo "$@" | tr " " "n" | sort -rV | head -n 1)" == "$1"; }
-
 # convert an official SDK Release Number into an actual git commit tag (eg: 1.2.162.1 => sdk-1.2.162)
-if version_lt $VK_VERSION "1.2.176.1"; then
+if $VK_VERSION -lt "1.2.176.1"; then
 BRANCH=$(curl https://vulkan.lunarg.com/sdk/config/$VK_VERSION/$os/SDK-$VK_VERSION-CONFIG.json | jq '.repos["Vulkan-Headers"].branch' --raw-output)
 else
 BRANCH=$(curl https://vulkan.lunarg.com/sdk/config/$VK_VERSION/$os/config.json | jq '.repos["Vulkan-Headers"].branch' --raw-output)
