@@ -1,5 +1,5 @@
 name: Setup
-on: [push]
+on: [push ]
 
 jobs:
   setup-both-with-versions:
