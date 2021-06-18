@@ -34,9 +34,28 @@ case `uname -s` in
 esac
 echo os=$os >&2
 
+# resolve latest into an actual SDK release number (currently only used for troubleshooting / debug output)
+REAL_VK_VERSION=$VK_VERSION
+if [[ $VK_VERSION == latest ]] ; then
+  REAL_VK_VERSION=$(curl -s https://vulkan.lunarg.com/sdk/latest.json | jq .$os --raw-output)
+  echo "resolved $VK_VERSION=$REAL_VK_VERSION" >&2
+fi
+
 # convert an official SDK Release Number into an actual git commit tag (eg: 1.2.162.1 => sdk-1.2.162)
-BRANCH=$(curl https://vulkan.lunarg.com/sdk/config/$VK_VERSION/$os/config.json | jq '.repos["Vulkan-Headers"].branch' --raw-output)
+BRANCH=$(curl -s https://vulkan.lunarg.com/sdk/config/$VK_VERSION/$os/config.json | jq '.repos["Vulkan-Headers"].branch' --raw-output)
 echo BRANCH=$BRANCH >&2
+
+if [[ $BRANCH == null ]] ; then
+  echo "error: could not resolve $VK_VERSION ($REAL_VK_VERSION) into a git branch via Vulkan SDK service" >&2
+  echo "raw CURL output:" >&2
+  echo "-------------------------------------------------------" >&2
+  curl -i https://vulkan.lunarg.com/sdk/config/$VK_VERSION/$os/config.json >&2
+  echo -e "\n-------------------------------------------------------" >&2
+  echo "NOTE -- according to the web service, these versions are available for os=$os:" >&2
+  curl -s https://vulkan.lunarg.com/sdk/versions/$os.json | jq --raw-output '.[]' >&2
+  echo -e "\n... aborting" >&2
+  exit 1
+fi
 
 mkdir VULKAN_SDK/_build
 pushd VULKAN_SDK/_build >&2
