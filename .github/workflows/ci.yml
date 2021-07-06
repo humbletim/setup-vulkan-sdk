@@ -44,6 +44,19 @@ jobs:
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           test -n "$VULKAN_SDK_VERSION"
 
+  setup-ubuntu-with-sdk-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-version: sdk-1.1.101
+      - name: Test Vulkan SDK Install
+        run: |
+          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+          echo "VULKAN_SDK=='$VULKAN_SDK'"
+          test -n "$VULKAN_SDK_VERSION"
+
   setup-windows-without-version:
     runs-on: windows-latest
     steps:
