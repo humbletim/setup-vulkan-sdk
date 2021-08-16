@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 project(test_vulkan)
 
 message(STATUS "")
-message(STATUS "|| VULKAN_SDK PREFLIGHT TEST ||")
+message(STATUS "|| VULKAN_SDK '$ENV{VULKAN_SDK}' PREFLIGHT TEST ||")
 find_package(Vulkan)
 get_cmake_property(Vars VARIABLES)
 # debug -- dump all variables starting with "vulkan""
@@ -15,7 +15,7 @@ endforeach()
 
 message(STATUS "")
 message(STATUS "|| VULKAN_SDK TEST APPLICATION ||")
-find_package(Vulkan REQUIRED)
+find_package(Vulkan REQUIRED FATAL_ERROR)
 add_executable(test_vulkan test_vulkan.c)
 target_link_libraries(test_vulkan PRIVATE Vulkan::Vulkan)
 

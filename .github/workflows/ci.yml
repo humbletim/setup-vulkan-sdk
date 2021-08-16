@@ -19,9 +19,9 @@ jobs:
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           test -n "$VULKAN_SDK_VERSION"
-          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release
-          cmake --build tests/build
-          ./tests/build/test_vulkan
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
 
   setup-ubuntu-without-version:
     runs-on: ubuntu-16.04
@@ -33,9 +33,9 @@ jobs:
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           test -n "$VULKAN_SDK_VERSION"
-          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release
-          cmake --build tests/build
-          ./tests/build/test_vulkan
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
 
   setup-ubuntu-with-version:
     runs-on: ubuntu-latest
@@ -49,9 +49,9 @@ jobs:
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           test -n "$VULKAN_SDK_VERSION"
-          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release
-          cmake --build tests/build
-          ./tests/build/test_vulkan
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
 
   setup-ubuntu-with-sdk-version:
     runs-on: ubuntu-latest
@@ -65,11 +65,11 @@ jobs:
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           test -n "$VULKAN_SDK_VERSION"
-          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release
-          cmake --build tests/build
-          ./tests/build/test_vulkan
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
 
-  setup-windows-without-version:
+  setup-windows-without-version-cmd:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -80,12 +80,13 @@ jobs:
           echo "Vulkan SDK Version=='%VULKAN_SDK_VERSION%'"
           echo "VULKAN_SDK=='%VULKAN_SDK%'"
           if "%VULKAN_SDK_VERSION%"=="" exit 1
-          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release
-          cmake --build tests/build
-          ./tests/build/test_vulkan
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=. || exit /b 1
+          cmake --build tests/build --config release || exit /b 1
+          set PATH=%PATH%;%VULKAN_SDK%/bin
+          .\tests\build\test_vulkan || exit /b 1
 
 
-  setup-windows-with-version:
+  setup-windows-with-version-powershell:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -97,6 +98,7 @@ jobs:
         run: |
           echo "Vulkan SDK Version=='$env:VULKAN_SDK_VERSION'"
           if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
-          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release
-          cmake --build tests/build
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release
+          $ENV:PATH="$ENV:PATH;$ENV:VULKAN_SDK/bin"
           ./tests/build/test_vulkan
