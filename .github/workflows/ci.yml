@@ -21,7 +21,7 @@ jobs:
           test -n "$VULKAN_SDK_VERSION"
           cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build tests/build --config release
-          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
+          PATH=$PATH:$PWD/VULKAN_SDK/bin ./tests/build/test_vulkan
 
   setup-ubuntu-without-version:
     runs-on: ubuntu-latest

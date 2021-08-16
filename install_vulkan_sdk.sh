@@ -19,21 +19,24 @@ set -e
 VK_VERSION=${1:-latest}
 
 os=unknown
+build_dir=$PWD
 case `uname -s` in
   Darwin) echo "TODO=Darwin" ;  exit 5 ;;
   Linux)
     os=linux
     ;;
-  *)
+  MINGW*)
     os=windows
     CC=cl.exe
     CXX=cl.exe
     PreferredToolArchitecture=x64
+    build_dir=$(pwd -W)
     unset TEMP
     unset TMP
     ;;
 esac
 echo os=$os >&2
+echo build_dir=$build_dir >&2
 
 # resolve latest into an actual SDK release number (currently only used for troubleshooting / debug output)
 REAL_VK_VERSION=$VK_VERSION
@@ -64,6 +67,8 @@ if [[ $BRANCH == null ]] ; then
   exit 1
 fi
 
+MAKEFLAGS=-j2
+
 test -d VULKAN_SDK/_build || mkdir VULKAN_SDK/_build
 pushd VULKAN_SDK/_build >&2
 
@@ -86,7 +91,8 @@ echo "" >&2
 
 # export these so that "sourcing" this file directly also works
 export VULKAN_SDK_VERSION=$BRANCH
-export VULKAN_SDK=$PWD/VULKAN_SDK
+
+export VULKAN_SDK=$build_dir/VULKAN_SDK
 
 # also print to STDOUT for eval'ing or appending to $GITHUB_ENV:
 echo VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION
