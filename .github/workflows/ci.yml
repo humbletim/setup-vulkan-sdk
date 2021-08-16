@@ -24,7 +24,9 @@ jobs:
           PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
 
   setup-ubuntu-without-version:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:16.04
     steps:
       - uses: actions/checkout@v2
       - uses: ./

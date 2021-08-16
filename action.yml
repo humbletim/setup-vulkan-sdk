@@ -24,7 +24,27 @@ runs:
       run: |
         case `uname -s` in
           Linux)
-            sudo apt-get install -y ninja-build libwayland-dev libxrandr-dev 
+            test -f /etc/os-release && . /etc/os-release
+            echo "VERSION_ID=$VERSION_ID"
+            case $VERSION_ID in
+              16.04)
+                cat /etc/issue
+                echo PATH=$PATH
+                echo "NOTE: assuming that we are running in a docker container..."
+                apt-get -qq update 
+                apt-get -qq install -y jq curl git make build-essential
+                test -d /usr/local || mkdir -v /usr/local
+                curl -s -L https://github.com/Kitware/CMake/releases/download/v3.20.3/cmake-3.20.3-Linux-x86_64.tar.gz | tar --strip 1 -C /usr/local -xzf -
+                ls /usr/local/bin || true
+                ls /usr/local/bin/cmake || true
+                hash
+                cmake --version
+                apt-get install -y ninja-build libwayland-dev libxrandr-dev
+                ;;
+              *)
+                sudo apt-get install -y ninja-build libwayland-dev libxrandr-dev
+                ;;
+            esac
             echo VK_VERSION=${{ inputs.vulkan-version-linux }} >> $GITHUB_ENV
             ;;
           Darwin)
