@@ -1,4 +1,4 @@
-# setup-vulkan-sdk v1.0.2
+# setup-vulkan-sdk v1.0.3
 
 <p align="left">
   <a href="https://github.com/humbletim/setup-vulkan-sdk"><img alt="GitHub Actions status" src="https://github.com/humbletim/setup-vulkan-sdk/workflows/Setup/badge.svg"></a>
@@ -13,7 +13,7 @@ This action builds a subset of the Vulkan SDK from source and makes the results 
 To build against the latest Vulkan SDK:
 ```yaml
   -name: Install Vulkan SDK
-   uses: humbletim/setup-vulkan-sdk@v1.0.2
+   uses: humbletim/setup-vulkan-sdk@v1.0.3
 ```
 
 ## Parameters
@@ -26,7 +26,7 @@ To build against the latest Vulkan SDK:
 ## Specifying an exact SDK by *packaged release number*:
 ```yaml
   -name: Install Vulkan SDK
-   uses: humbletim/setup-vulkan-sdk@v1.0.2
+   uses: humbletim/setup-vulkan-sdk@v1.0.3
    with:
      vulkan-version: 1.2.161.1
 ```
@@ -34,7 +34,7 @@ To build against the latest Vulkan SDK:
 ## Specifying an exact SDK by *khronos git branch*:
 ```yaml
   -name: Install Vulkan SDK
-   uses: humbletim/setup-vulkan-sdk@v1.0.2
+   uses: humbletim/setup-vulkan-sdk@v1.0.3
    with:
      vulkan-version: sdk-1.1.108
 ```
