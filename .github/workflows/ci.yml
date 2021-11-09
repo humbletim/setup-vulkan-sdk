@@ -2,16 +2,17 @@ name: Setup
 on: [push]
 
 jobs:
-  setup-both-with-versions:
+  setup-all-with-versions:
     strategy:
       matrix:
-        runs-on: [ubuntu-latest, windows-latest]
+        runs-on: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v2
       - uses: ./
         with:
           vulkan-version-linux: 1.2.154.0
+          vulkan-version-macos: 1.2.189.0
           vulkan-version-windows: latest
       - name: Test Vulkan SDK Install
         shell: bash
@@ -104,3 +105,33 @@ jobs:
           cmake --build tests/build --config release
           $ENV:PATH="$ENV:PATH;$ENV:VULKAN_SDK/bin"
           ./tests/build/test_vulkan
+
+  setup-macos-without-version:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+      - name: Test Vulkan SDK Install
+        run: |
+          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+          echo "VULKAN_SDK=='$VULKAN_SDK'"
+          test -n "$VULKAN_SDK_VERSION"
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
+
+  setup-macos-with-version:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-version: 1.2.189.0
+      - name: Test Vulkan SDK Install
+        run: |
+          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+          echo "VULKAN_SDK=='$VULKAN_SDK'"
+          test -n "$VULKAN_SDK_VERSION"
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
