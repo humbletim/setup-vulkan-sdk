@@ -6,7 +6,7 @@
 
 This action builds a subset of the Vulkan SDK from source and makes the results available to later build steps through a `VULKAN_SDK` environment variable.
 
-*note: currently only x64 windows and x64 linux environments are supported (if you need another configuration added let me know)*
+*note: currently only x64 windows, x64 linux and macOS environments are supported (if you need another configuration added let me know)*
 
 # Basic Usage
 

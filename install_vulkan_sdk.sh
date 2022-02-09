@@ -21,7 +21,9 @@ VK_VERSION=${1:-latest}
 os=unknown
 build_dir=$PWD
 case `uname -s` in
-  Darwin) echo "TODO=Darwin" ;  exit 5 ;;
+  Darwin)
+    os=mac
+    ;;
   Linux)
     os=linux
     ;;
