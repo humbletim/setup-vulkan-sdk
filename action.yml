@@ -5,79 +5,59 @@ branding:
   color: 'red'  
 inputs:
   vulkan-version:
-    description: 'specify a Vulkan SDK release version, e.g. 1.2.162.1 (or git branch like sdk-1.2.162)'
+    description: 'Vulkan SDK release version, e.g. 1.2.162.1'
     default: 'latest'
     required: false
-  vulkan-version-linux:
-    description: 'specify a linux-specific Vulkan SDK release version, e.g. 1.2.162.1 (or git branch like sdk-1.2.162)'
-    default: ''
+  vulkan-config-file:
+    description: 'file path to project local SDK spec (will override vulkan-version if both are specified)'
     required: false
-  vulkan-version-macos:
-    description: 'specify a macOS-specific Vulkan SDK release version, e.g. 1.2.162.1 (or git branch like sdk-1.2.162)'
-    default: ''
+  vulkan-components:
+    description: 'specify which Vulkan SDK components to install, e.g. headers, loader, glslang'
+    default: headers, loader
     required: false
-  vulkan-version-windows:
-    description: 'specify a windows-specific Vulkan SDK release version, e.g. 1.2.162.1 (or git branch like sdk-1.2.162)'
-    default: ''
+  vulkan-use-cache:
+    description: 'specify whether to cache VULKAN_SDK/ results between runs (using github actions/cache)'
+    default: false
     required: false
 runs:
   using: "composite"
   steps: 
-    - name: Install Build Dependencies
-      shell: bash
-      run: |
-        case `uname -s` in
-          Linux)
-            test -f /etc/os-release && . /etc/os-release
-            echo "VERSION_ID=$VERSION_ID"
-            case $VERSION_ID in
-              16.04)
-                cat /etc/issue
-                echo PATH=$PATH
-                echo "NOTE: assuming that we are running in a docker container..."
-                apt-get -qq update 
-                apt-get -qq install -y jq curl git make build-essential
-                test -d /usr/local || mkdir -v /usr/local
-                curl -s -L https://github.com/Kitware/CMake/releases/download/v3.20.3/cmake-3.20.3-Linux-x86_64.tar.gz | tar --strip 1 -C /usr/local -xzf -
-                ls /usr/local/bin || true
-                ls /usr/local/bin/cmake || true
-                hash
-                cmake --version
-                apt-get install -y ninja-build libwayland-dev libxrandr-dev
-                ;;
-              *)
-                sudo apt-get install -y ninja-build libwayland-dev libxrandr-dev
-                ;;
-            esac
-            echo VK_VERSION=${{ inputs.vulkan-version-linux }} >> $GITHUB_ENV
-            ;;
-          Darwin)
-            echo VK_VERSION=${{ inputs.vulkan-version-macos }} >> $GITHUB_ENV
-            ;;
-          *) # Windows
-            mkdir _vulkan_tmp
-            curl -L -o _vulkan_tmp/ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
-            unzip -d _vulkan_tmp _vulkan_tmp/ninja-win.zip
-            echo $PWD/_vulkan_tmp >> $GITHUB_PATH
-            echo VK_VERSION=${{ inputs.vulkan-version-windows }} >> $GITHUB_ENV
-            ;;
-        esac
+    - name: Check Vulkan SDK Cache
+      if: inputs.vulkan-use-cache != 'false'
+      id: vulkan-cached-sdk
+      uses: actions/cache@v2
+      with:
+        path: VULKAN_SDK
+        key: ${{ runner.os }}-vulkan-cached-sdk-${{ inputs.vulkan-version }}-${{ hashFiles(inputs.vulkan-config-file) }}-${{ inputs.vulkan-components }}
 
-    - name: Clone and Build Vulkan SDK
+    - name: Configure Vulkan SDK
+      if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
         VK_VERSION=${VK_VERSION:-${{ inputs.vulkan-version }}}
+        VK_CONFIG_FILE=${VK_CONFIG_FILE:-${{ inputs.vulkan-config-file }}}
+        VK_COMPONENTS=${VK_COMPONENTS:-${{ inputs.vulkan-components }}}
+        echo "VK_CONFIG_FILE=$VK_CONFIG_FILE" >> $GITHUB_ENV
         echo "VK_VERSION=$VK_VERSION" >> $GITHUB_ENV
-        echo "requested SDK version is $VK_VERSION"
-        $GITHUB_ACTION_PATH/install_vulkan_sdk.sh $VK_VERSION | tee -a $GITHUB_ENV
+        echo "VK_COMPONENTS=$VK_COMPONENTS" >> $GITHUB_ENV
+        test -d VULKAN_SDK || mkdir VULKAN_SDK
+        touch VULKAN_SDK/env
+        if [[ -n "${VK_CONFIG_FILE}" ]] ; then
+          echo "requested SDK config file is $VK_CONFIG_FILE [ $VK_COMPONENTS ]"
+          GITHUB_ENV=VULKAN_SDK/env $GITHUB_ACTION_PATH/install_vulkan_sdk.sh --config "${VK_CONFIG_FILE}" $VK_COMPONENTS
+        else
+          echo "requested SDK version is $VK_VERSION [ $VK_COMPONENTS ]"
+          GITHUB_ENV=VULKAN_SDK/env $GITHUB_ACTION_PATH/install_vulkan_sdk.sh --release $VK_VERSION $VK_COMPONENTS
+        fi
 
     - name: Finalize SDK installation
       shell: bash
       run: |
+        . VULKAN_SDK/env
+        cat VULKAN_SDK/env >> $GITHUB_ENV
         if [ -z "$VULKAN_SDK" ]; then
           echo "Failed to install Vulkan SDK $VK_VERSION."
           exit 3
         else
           echo "Vulkan SDK $VK_VERSION ($VULKAN_SDK_VERSION) successfully installed to $VULKAN_SDK."
         fi
-        test -d _vulkan_tmp && rm -rf _vulkan_tmp || true
