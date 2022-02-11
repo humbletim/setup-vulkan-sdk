@@ -1,3 +1,4 @@
+_NOTE: this is WIP documentation for upcoming v1.1.0 release in main branch; current stable version is v1.0.3 see [humbletim/setup-vulkan-sdk@v1.0.3](https://github.com/humbletim/setup-vulkan-sdk/tree/v1.0.3)._
 # setup-vulkan-sdk v1.1.0
 
 <p align="left">

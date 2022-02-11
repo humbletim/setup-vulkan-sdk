@@ -22,6 +22,18 @@ inputs:
 runs:
   using: "composite"
   steps: 
+    - name: Configure Vulkan Prerequisites
+      shell: bash
+      run: |
+        case `uname -s` in
+          Darwin) ;;
+          Linux) 
+            apt-get -qq update 
+            apt-get -qq install -y libwayland-dev libxrandr-dev
+          ;;
+          MINGW*) ;;
+        esac
+
     - name: Check Vulkan SDK Cache
       if: inputs.vulkan-use-cache != 'false'
       id: vulkan-cached-sdk
@@ -29,6 +41,7 @@ runs:
       with:
         path: VULKAN_SDK
         key: ${{ runner.os }}-vulkan-cached-sdk-${{ inputs.vulkan-version }}-${{ hashFiles(inputs.vulkan-config-file) }}-${{ inputs.vulkan-components }}
+
 
     - name: Configure Vulkan SDK
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
@@ -42,6 +55,11 @@ runs:
         echo "VK_COMPONENTS=$VK_COMPONENTS" >> $GITHUB_ENV
         test -d VULKAN_SDK || mkdir VULKAN_SDK
         touch VULKAN_SDK/env
+        case `uname -s` in
+          Darwin) ;;
+          Linux) . $GITHUB_ACTION_PATH/prereqs/ubuntu.sh ;;
+          MINGW*) . $GITHUB_ACTION_PATH/prereqs/windows-2021.sh ;;
+        esac
         if [[ -n "${VK_CONFIG_FILE}" ]] ; then
           echo "requested SDK config file is $VK_CONFIG_FILE [ $VK_COMPONENTS ]"
           GITHUB_ENV=VULKAN_SDK/env $GITHUB_ACTION_PATH/install_vulkan_sdk.sh --config "${VK_CONFIG_FILE}" $VK_COMPONENTS

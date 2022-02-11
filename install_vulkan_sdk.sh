@@ -22,8 +22,10 @@ if [[ "$*" == *--help ]] ; then
   echo ""
   echo "usage for SDK version:"
   echo "   ./install_vulkan_sdk.sh --release <VERSION> <component,component,...> [options]"
-  echo "usage for SDK version:"
+  echo "usage with local SDK config.json specs:"
   echo "   ./install_vulkan_sdk.sh --config <sdk-specs.json> <component,component,...> [options]"
+  # echo "usage for initializing $os system dependencies (eg: libwayland on ubuntu)"
+  # echo "   ./install_vulkan_sdk.sh --initialize"
   echo ""
   echo "  options:"
   echo "    --help                this help text"
@@ -83,6 +85,7 @@ VULKAN_COMPONENTS=( "headers loader" )
 while [[ $# -gt 0 ]]; do
   case $1 in
     --dry-run) DRY_RUN="(dry run)" && shift ;;
+    # --initialize) INITIALIZE_PREREQS=1 && shift ;;
     --config) VK_CONFIG_FILE=$2 && shift 2 ;;
     --release) VK_VERSION=$2 && shift 2 ;;
     --query-versions)
@@ -113,18 +116,6 @@ function resolve_sdk_version() {
 }
 
 function init() {
-  if [[ -d $GITHUB_ACTION_PATH ]] ; then
-    # set up os-specific prerequisites
-    case $os in
-      mac) ;;
-      linux) . $GITHUB_ACTION_PATH/prereqs/linux.sh ;;
-      windows) . $GITHUB_ACTION_PATH/prereqs/windows-2021.sh ;;
-      *)
-        fail_if_action "unrecognized os: $os uname=='`uname -s`'"
-        exit 10
-        ;;
-    esac
-  fi
 
   if [[ -n $QUERY_VERSIONS ]] ; then
     QUERY_URL=https://vulkan.lunarg.com/sdk/versions/$QUERY_VERSIONS.json
@@ -363,6 +354,19 @@ function display_vulkan_services_error() {
 }
 
 ############################################ 
+
+# if [[ -n $INITIALIZE_PREREQS || -d $GITHUB_ACTION_PATH ]] ; then
+#   # set up os-specific prerequisites
+#   case $os in
+#     mac) ;;
+#     linux) . $GITHUB_ACTION_PATH/prereqs/ubuntu.sh ;;
+#     windows) . $GITHUB_ACTION_PATH/prereqs/windows-2021.sh ;;
+#     *)
+#       fail_if_action "unrecognized os: $os uname=='`uname -s`'"
+#       exit 10
+#       ;;
+#   esac
+# fi
 
 init
 pushd VULKAN_SDK/_build > /dev/null
