@@ -324,7 +324,7 @@ function push_vulkan_repo_branch() {
   # log "components='${components}'"
   # determine corresponding repo and branch/commit point
   local BRANCH=$(jq '.repos[$component].branch' --arg component "$1" --raw-output $config_json)
-  local COMMIT=$(jq '.repos[$component].commit' --arg component "$1" --raw-output $config_json)
+  local COMMIT=$(jq '.repos[$component].commit // .repos[$component].tag' --arg component "$1" --raw-output $config_json)
   local URL=$(jq '.repos[$component].url' --arg component "$1" --raw-output $config_json)
   local SUBDIR=$(basename -s .git "$URL")
 
