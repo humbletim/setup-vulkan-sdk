@@ -1,0 +1,155 @@
+{
+    "version": "1.2.198.1",
+    "release_date": "2021-12-03",
+    "release": true,
+    "publisher": "LunarG, Inc.",
+    "copyright": "Copyright (c) 2015-2021 LunarG, Inc.",
+    "comments" : "Building using the branch will build the most recent SDK on that branch. If you want to build a previous SDK on that branch, use the tag",
+    "repos": {
+        "Vulkan-Headers": {
+            "url": "https://github.com/KhronosGroup/Vulkan-Headers.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "configs": [ "Release" ]
+        },
+        "Vulkan-Loader": {
+            "url": "https://github.com/KhronosGroup/Vulkan-Loader.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.1",
+            "defines": [
+                "BUILD_DLL_VERSIONINFO={version_string}"
+            ],
+            "configs": [ "RelWithDebInfo" ],
+            "dependencies": {
+                "Vulkan-Headers": "VULKAN_HEADERS_INSTALL_DIR"
+            }
+        },
+        "Vulkan-ValidationLayers": {
+            "url": "https://github.com/KhronosGroup/Vulkan-ValidationLayers.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "defines": [
+                "BUILD_LAYER_SUPPORT_FILES=ON",
+                "ANNOTATED_SPEC_LINK=\"\\\"https://vulkan.lunarg.com/doc/view/_MAGIC_VERSION_ID_.0/windows/_MAGIC_ANNOTATED_SPEC_TYPE_/vkspec.html\\\"\"",
+                "ROBIN_HOOD_HASHING_INSTALL_DIR={root_path}\\robin-hood-hashing\\repo"
+             ],
+            "configs": [ "Release" ],
+            "dependencies": {
+                "SPIRV-Headers": "SPIRV_HEADERS_INSTALL_DIR",
+                "Vulkan-Headers": "VULKAN_HEADERS_INSTALL_DIR",
+                "SPIRV-Tools": "SPIRV_TOOLS_INSTALL_DIR"
+            },
+            "vk_layer_settings_files": [ "layers/vk_layer_settings.txt" ]
+        },
+	"Vulkan-ExtensionLayer": {
+            "url": "https://github.com/KhronosGroup/Vulkan-ExtensionLayer.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "configs": [ "RelWithDebInfo" ],
+            "dependencies": {
+                "Vulkan-Headers": "VULKAN_HEADERS_INSTALL_DIR"
+            },
+            "vk_layer_settings_files": [ "layers/vk_layer_settings.txt" ]
+	},
+        "Khronos-Tools": {
+            "url": "https://github.com/KhronosGroup/Vulkan-Tools.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "defines": [
+                "VULKANINFO_BUILD_DLL_VERSIONINFO={version_string}"
+            ],
+            "configs": [ "RelWithDebInfo" ],
+            "dependencies": {
+                "Vulkan-Headers": "VULKAN_HEADERS_INSTALL_DIR",
+                "Vulkan-Loader": "VULKAN_LOADER_INSTALL_DIR"
+            }
+        },
+        "Glslang": {
+            "url": "https://github.com/KhronosGroup/Glslang.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "script": [ "py -2 update_glslang_sources.py" ],
+            "configs": [ "RelWithDebInfo", "Debug" ]
+        },
+        "LunarG-Tools": {
+            "url": "https://github.com/LunarG/VulkanTools.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "script": [ "update_external_sources.bat --all" ],
+            "configs": [ "RelWithDebInfo" ],
+            "dependencies": {
+                "Vulkan-Headers": "VULKAN_HEADERS_INSTALL_DIR",
+                "Vulkan-Loader": "VULKAN_LOADER_INSTALL_DIR",
+                "Vulkan-ValidationLayers": "VULKAN_VALIDATIONLAYERS_INSTALL_DIR"
+            },
+            "vk_layer_settings_files": [ "layersvt/vk_layer_settings.txt" ]
+        },
+        "SPIRV-Cross": {
+            "url": "https://github.com/KhronosGroup/SPIRV-Cross.git",
+            "commit": "401296d3b8fc60193e99ccabb81eb3e4fe2dd802",
+            "defines": [ "SPIRV_CROSS_SHARED=ON" ],
+            "configs": [ "Release", "Debug" ]
+        },
+        "SPIRV-Tools": {
+            "url": "https://github.com/KhronosGroup/SPIRV-Tools.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "configs": [ "Release", "Debug" ],
+            "dependencies": {
+                "SPIRV-Headers": "SPIRV_HEADERS_INSTALL_DIR"
+            },
+            "defines": [
+                "SPIRV-Headers_SOURCE_DIR={root_path_forward}/SPIRV-Headers/repo"
+            ]
+        },
+        "shaderc": {
+            "url": "https://github.com/google/shaderc.git",
+            "commit": "23539a3a9d50bab5b6d2467f4b5d2ce1b47eb8f2",
+            "script": [ "py -2 update_shaderc_sources.py" ],
+            "defines": [
+                "CMAKE_DEBUG_POSTFIX=d",
+                "SHADERC_SKIP_TESTS=ON",
+                "SHADERC_ENABLE_SHARED_CRT=ON",
+                "SHADERC_SKIP_COPYRIGHT_CHECK=ON"
+            ],
+            "subdir": "src",
+            "configs": [ "Release", "Debug" ]
+        },
+        "DXC": {
+            "url": "https://github.com/microsoft/DirectXShaderCompiler.git",
+            "commit": "9adf10c8e1df38628a19d2bcff337b5d5296dffc",
+            "platforms": ["Linux", "Darwin"]
+        },
+        "gfxreconstruct": {
+            "url": "https://github.com/LunarG/gfxreconstruct.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "configs": [ "RelWithDebInfo" ],
+            "vk_layer_settings_files": [ "layer/vk_layer_settings.txt" ]
+        },
+        "SPIRV-Headers": {
+            "url": "https://github.com/KhronosGroup/SPIRV-Headers.git",
+            "branch": "sdk-1.2.198",
+            "tag": "sdk-1.2.198.0",
+            "configs": [ "RelWithDebInfo" ]
+        },
+        "SPIRV-Reflect": {
+            "url": "https://github.com/KhronosGroup/SPIRV-Reflect.git",
+            "commit": "cc937caab141d889c9c9dff572c5a6854d5cf9b4",
+            "configs": [ "RelWithDebInfo" ]
+        },
+        "MoltenVK": {
+            "url": "https://github.com/KhronosGroup/MoltenVK.git",
+            "tag": "v1.1.6",
+            "platforms": ["Darwin"]
+        },
+        "Vulkan-Docs": {
+            "url": "https://github.com/KhronosGroup/Vulkan-Docs.git",
+            "tag": "v1.2.189"
+        },
+        "robin-hood-hashing": {
+            "url": "https://github.com/martinus/robin-hood-hashing.git",
+            "commit": "3.11.3"
+        }
+    }
+}

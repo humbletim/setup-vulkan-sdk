@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 int main(int argc, char** argv) {
+  fprintf(stderr, "main....\n");fflush(stderr);
   uint32_t version = 0;
   PFN_vkEnumerateInstanceVersion vkEnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion)vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceVersion");
   if(vkEnumerateInstanceVersion) {
