@@ -38,7 +38,7 @@ jobs:
           cmake --build tests/build --config release
           PATH=$PATH:$PWD/VULKAN_SDK/bin ./tests/build/test_vulkan
 
-  setup-ubuntu-with-config-json:
+  setup-ubuntu-with-fetched-config-json:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -48,6 +48,23 @@ jobs:
       - uses: ./
         with:
           vulkan-config-file: vulkan_ubuntu_config.json
+          vulkan-components: headers, loader
+      - name: Test Vulkan SDK Install
+        run: |
+          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+          echo "VULKAN_SDK=='$VULKAN_SDK'"
+          test -n "$VULKAN_SDK_VERSION"
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
+
+  setup-ubuntu-with-local-config-json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-config-file: tests/vulkan_sdk_specs/linux.json
           vulkan-components: headers, loader
       - name: Test Vulkan SDK Install
         run: |
