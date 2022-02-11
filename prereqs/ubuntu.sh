@@ -19,7 +19,7 @@ case $VERSION_ID in
     cmake --version
     ;;
   *)
-    apt-get -qq install -y ninja-build
+    sudo apt-get -qq install -y ninja-build
     # modern builds using 18.04+
   ;;
 esac

@@ -28,8 +28,8 @@ runs:
         case `uname -s` in
           Darwin) ;;
           Linux) 
-            apt-get -qq update 
-            apt-get -qq install -y libwayland-dev libxrandr-dev
+            sudo apt-get -qq update 
+            sudo apt-get -qq install -y libwayland-dev libxrandr-dev
           ;;
           MINGW*) ;;
         esac
