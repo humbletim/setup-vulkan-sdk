@@ -4,11 +4,12 @@
   <a href="https://github.com/humbletim/setup-vulkan-sdk"><img alt="GitHub Actions status" src="https://github.com/humbletim/setup-vulkan-sdk/workflows/Setup/badge.svg"></a>
 </p>
 
-This action installs the Vulkan SDK components needed to compile and link Vulkan applications.
+This action installs Vulkan SDK components for compiling and linking Vulkan applications.
 
-By default only the API headers and loader are included, but other components can also be selected using action parameters.
+By default only the API headers and loader are included, but additional SDK components can be selected using action parameters.
 
-One of the challenges around building Vulkan SDK components from source is determining compatible versions across Khronos repos. Fortunately, LunarG provides a useful API web service that this action leverages to resolve release numbers into corresponding source. For production workflows, it is however recommended to create a project-local snapshot of the SDK revision specs (see last integration example below).
+For production workflows it is recommended to create project-local copies of the desired SDK `config.json` revision specs -- see [Advanced](#advanced-integration) below for an example.
+
 
 ## Usage
 
@@ -43,28 +44,6 @@ To target a different Vulkan SDK release number, include glslangValidator toolin
       vulkan-use-cache: true
 ```
 
-### Advanced integration
-One way to lock-in a specific SDK version spec is to add the corresponding `config.json` to your project tree and specify its path as the `vulkan-config-file` parameter.
-
-Here is an example SDK spec for the Linux v1.2.198.1 Vulkan SDK release: https://vulkan.lunarg.com/sdk/config/1.2.198.1/linux/config.json
-
-Example steps for adding to the local project tree:
-```sh
-mkdir vulkan_sdk_specs
-curl -o vulkan_sdk_specs/linux.json https://vulkan.lunarg.com/sdk/config/1.2.198.1/linux/config.json
-git add vulkan_sdk_specs/linux.json
-git commit -m "pinned vulkan sdk version for linux"
-```
-Example Workflow integration:
-```yaml
-  - name: Configure Vulkan SDK using in-repo config
-    uses: humbletim/setup-vulkan-sdk@v1.1.0
-    with:
-      vulkan-config-file: vulkan_sdk_specs/linux.json
-      vulkan-components: headers, loader
-      vulkan-use-cache: true
-```
-
 ## Action Parameters
 
 - `vulkan-version`: *(optional)* valid SDK release number (eg: 1.2.161.1). Default: `latest`.
@@ -83,6 +62,32 @@ Example Workflow integration:
     - `spirv-reflect` - [KhronosGroup/SPIRV-Reflect](https://github.com/KhronosGroup/SPIRV-Reflect)
     - `spirv-headers` - [KhronosGroup/SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers)
     - `validation` - [KhronosGroup/Vulkan-ValidationLayers](https://github.com/KhronosGroup/Vulkan-ValidationLayers)
+
+### Advanced integration
+Building Vulkan SDK components from source requires finding compatible releases across Khronos repos (which move at different paces).
+
+Fortunately LunarG provides an official version API [web service](https://vulkan.lunarg.com/content/view/latest-sdk-version-api) that can resolve release numbers into corresponding source. By default this action relies on the service to map revision inputs, but it is also possible to lock-in a specific source set by creating a local copy of the corresponding `config.json` in your project tree.
+
+As a reference point here is what the `config.json` specs look like for the Vulkan SDK Linux v1.2.198.1 release:
+- in-tree version: [tests/vulkan_sdk_specs/linux.json](tests/vulkan_sdk_specs/linux.json)
+- retrieved from: https://vulkan.lunarg.com/sdk/config/1.2.198.1/linux/config.json
+
+Example steps for adding to the project tree:
+```sh
+mkdir vulkan_sdk_specs
+curl -o vulkan_sdk_specs/linux.json https://vulkan.lunarg.com/sdk/config/1.2.198.1/linux/config.json
+git add vulkan_sdk_specs/linux.json
+git commit -m "pinned vulkan sdk version for linux"
+```
+And example Workflow integration:
+```yaml
+  - name: Configure Vulkan SDK using in-repo config
+    uses: humbletim/setup-vulkan-sdk@v1.1.0
+    with:
+      vulkan-config-file: vulkan_sdk_specs/linux.json
+      vulkan-components: headers, loader
+      vulkan-use-cache: true
+```
 
 ## Notes
 
@@ -117,7 +122,7 @@ Additional action integration examples can be found as part of this project's CI
 
 This action now also supports unattended installation of official Vulkan SDK binary releases; however, this is only meant only as a fallback strategy to consider alongside building just the components you need from source. Note that SDK binary releases currently include over a gigabyte of expanded content that is typically unnecessary for automated builds.
 
-Addition ~component parameter option:
+Additional ~component parameter option:
 - `prebuilt` - [LunarG Vulkan SDK binaries](https://www.lunarg.com/vulkan-sdk/) (automated download/unpacking)
   - _note: the prebuilt option is meant to be mutually-exclusive with all other options except loader_
 
