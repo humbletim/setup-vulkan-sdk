@@ -5,10 +5,10 @@ branding:
   color: 'red'  
 inputs:
   vulkan-config-file:
-    description: 'Vulkan SDK configuration path (prefer this to relying on vulkan-remote-version lookup)'
+    description: 'Vulkan SDK configuration path (prefer this to relying on vulkan-query-version lookup)'
     default: ''
-    required: true
-  vulkan-remote-version:
+    required: false
+  vulkan-query-version:
     description: 'Vulkan SDK release version (download configuration file from LunarG web services)'
     default: ''
     required: false
@@ -23,19 +23,23 @@ inputs:
 runs:
   using: "composite"
   steps: 
+    # - name: Configure vsdevenv
+    #   if : runner.os == 'Windows'
+    #   uses: seanmiddleditch/gha-setup-vsdevenv@v4
     - name: Resolve Vulkan SDK Configuration
       shell: bash
       run: |
+        # resolve_vulkan_sdk_environment
         . $GITHUB_ACTION_PATH/action_helpers.sh
         resolve_vulkan_sdk_environment \
-          "${{ inputs.vulkan-remote-url }}" \
-          "${{ inputs.vulkan-remote-version }}" \
+          "${{ inputs.vulkan-query-version }}" \
           "${{ inputs.vulkan-config-file }}" \
           "${{ inputs.vulkan-components }}"
 
     - name: Configure Development Environment Prerequisites
       shell: bash
       run: |
+        # dev prerequisites
         case `uname -s` in
           Darwin) ;;
           Linux) 
@@ -45,18 +49,33 @@ runs:
           MINGW*) ;;
         esac
 
-    - name: Check Vulkan SDK Cache
+    - name: Generate cache key
       if: inputs.vulkan-use-cache != 'false'
+      shell: bash
+      run: |
+        # cache-key.txt
+        . $PWD/_vulkan_build/env
+        ( 
+          echo VULKAN_SDK_CONFIG_FILE=$(sha256sum $VULKAN_SDK_CONFIG_FILE || openssl sha256 $VULKAN_SDK_CONFIG_FILE)
+          echo VULKAN_SDK_CONFIG_VERSION=$VULKAN_SDK_CONFIG_VERSION
+          echo VULKAN_SDK_COMPONENTS=\"$VULKAN_SDK_COMPONENTS\"
+          echo vulkan-use-cache=${{ inputs.vulkan-use-cache }}
+        ) | tee _vulkan_build/cache-key.txt >&2
+
+    - name: Check Vulkan SDK Cache
       id: vulkan-cached-sdk
+      if: inputs.vulkan-use-cache != 'false'
       uses: actions/cache@v2
       with:
         path: VULKAN_SDK
-        key: ${{ runner.os }}-vulkan-cached-sdk-${{ hashFiles(env.VULKAN_SDK_CONFIG_FILE) }}-${{ inputs.vulkan-components }}
+        key: ${{ runner.os }}-vulkan-cached-sdk-${{ hashFiles('_vulkan_build/cache-key.txt') }}
+        restore-keys: ${{ runner.os }}-vulkan-cached-sdk-d0b63dd95eca50e9465cd9aca24a945f23772c92569b9db5675360d00b5b5d6d
 
     - name: Configure Vulkan SDK Build Prerequisites
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
+        # vulkan tools prereq
         . $GITHUB_ACTION_PATH/action_helpers.sh
         . $PWD/_vulkan_build/env
         configure_sdk_prereqs $PWD/_vulkan_build/tools
@@ -70,43 +89,54 @@ runs:
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
+        # cmake configure
+        set -a
         . $PWD/_vulkan_build/env
-        cmake -G Ninja -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} -DCMAKE_BUILD_TYPE=Release \
+        echo CC=$CC CXX=$CXX
+        $devenv cmake --version
+        $devenv cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
+          -DCMAKE_BUILD_TYPE=Release \
           -DVULKAN_SDK=${VULKAN_SDK} \
           -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
-          -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}"
+          -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
+        || { cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
+        # cmake build
+        set -a
         . $PWD/_vulkan_build/env
-        cmake --build ${VULKAN_SDK_BUILD_DIR} --config Release
+        $devenv cmake --build ${VULKAN_SDK_BUILD_DIR} --config Release
 
     - name: Install Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
       shell: bash
       run: |
+        # cmake install
+        set -a
         . $PWD/_vulkan_build/env
         cmake --install ${VULKAN_SDK_BUILD_DIR}
 
     - name: Verify Vulkan SDK Installation
       shell: bash
       run: |
+        # verify VULKAN_SDK
         . $PWD/_vulkan_build/env
         test -s ${VULKAN_SDK}/sdk.env
         . ${VULKAN_SDK}/sdk.env
         if [[ -d "${VULKAN_SDK}" && -n "${VULKAN_SDK_VERSION}" ]] ; then
           echo "Vulkan SDK v${VULKAN_SDK_VERSION} successfully installed into ${VULKAN_SDK}."
-          du -hs ${VULKAN_SDK}
         else
           echo "Could not verify Vulkan SDK installation"
           exit 3
         fi
 
-    - name: Export VULKAN_SDK to GITHUB_ENV
+    - name: Export VULKAN_SDK and bin/ PATH to environment
       shell: bash
       run: |
+        # export vulkan env vars
         . $PWD/_vulkan_build/env
         . ${VULKAN_SDK}/sdk.env
         (
@@ -114,3 +144,5 @@ runs:
           echo VULKAN_SDK_VERSION=${VULKAN_SDK_VERSION}
         ) | tee -a $GITHUB_ENV
         echo ${VULKAN_SDK}/bin | tee -a $GITHUB_PATH
+        rm -rf $PWD/_vulkan_build
+        du -hs ${VULKAN_SDK}

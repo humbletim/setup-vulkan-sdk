@@ -9,16 +9,17 @@ function lunarg_get_latest_sdk_version() {
   curl -sL https://vulkan.lunarg.com/sdk/latest/$platform.txt
 }
 
+remote_url_used=
 function lunarg_fetch_sdk_config() {
-  local platform=$1 remote_version=$2
-  curl -sL https://vulkan.lunarg.com/sdk/config/$remote_version/$platform/config.json
+  local platform=$1 query_version=$2
+  remote_url_used=https://vulkan.lunarg.com/sdk/config/$query_version/$platform/config.json
+  curl -sL $remote_url_used
 }
 
 function resolve_vulkan_sdk_environment() {
-  local remote_url=$1
-  local remote_version=$2
-  local config_file=$3
-  local sdk_components=$(echo "$4" | xargs echo | sed -e 's@[,; ]\+@;@g')
+  local query_version=$1
+  local config_file=$2
+  local sdk_components=$(echo "$3" | xargs echo | sed -e 's@[,; ]\+@;@g')
   
   local base_dir=$PWD
   local platform=unknown
@@ -38,25 +39,60 @@ function resolve_vulkan_sdk_environment() {
   VULKAN_SDK=$base_dir/VULKAN_SDK
   test -d $VULKAN_SDK || mkdir -v $VULKAN_SDK
 
-  if [[ -n "$remote_version" ]] ; then
+  if [[ -z "$config_file" ]] ; then
+    test -n "$query_version"
     config_file=$build_dir/config.json
-    lunarg_fetch_sdk_config $platform $remote_version > $config_file
+    lunarg_fetch_sdk_config $platform $query_version > $config_file
   fi
 
   test -s $config_file
   sdk_version=$(jq .version $config_file)
   test -n $sdk_version
   test $sdk_version != null
+  
   (
     echo VULKAN_SDK_BUILD_DIR=$build_dir
     echo VULKAN_SDK=$VULKAN_SDK
     echo VULKAN_SDK_PLATFORM=$platform
-    echo VULKAN_SDK_REMOTE_URL=$remote_url
-    echo VULKAN_SDK_REMOTE_VERSION=$remote_url
+    echo VULKAN_SDK_QUERY_URL=$remote_url_used
+    echo VULKAN_SDK_QUERY_VERSION=$query_version
     echo VULKAN_SDK_CONFIG_FILE=$config_file
     echo VULKAN_SDK_CONFIG_VERSION=$sdk_version
     echo VULKAN_SDK_COMPONENTS=\"$sdk_components\"
+    case `uname -s` in
+      MINGW*)
+        # declare > $build_dir/_system.env
+        function vsdevenv() {
+            local tmpfile=$(mktemp -p $PWD);
+            echo "#!/bin/bash" > $tmpfile
+            for x in "$@" ; do echo -n "\"""$x""\" " >> $tmpfile; done
+            echo >> $tmpfile
+            # cat $tmpfile >&2
+            cmd //q //c "$vsdevcmd -no_logo -arch=amd64 -host_arch=amd64 && bash $tmpfile";
+            rm $tmpfile
+        }
+        vsdevcmd=$(cygpath -ms /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/*/*/Common7/Tools/vsdevcmd.bat|sort -r|head -1)
+        ASM=$(cygpath -ms /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/*/*/VC/Tools/MSVC/*/bin/Hostx64/*/ml.exe|sort -r|head -1)
+        ASM_PATH=$(dirname $(cygpath $ASM))
+        echo -e "#\!/bin/bash\nvsdevcmd=$vsdevcmd\nexport PATH=$ASM_PATH:\$PATH\n$(declare -f vsdevenv)\nvsdevenv \"\$@\"" > $build_dir/devenv.sh
+        # vsdevenv "declare" > $build_dir/_vsdev.env
+        # echo "compiler.env ($vsdevcmd):" >&2
+        # grep -vxF -f $build_dir/_system.env $build_dir/_vsdev.env | tee $build_dir/compiler.env >&2
+        # echo "//" >&2
+        # CL=$(bash -c ". $build_dir/compiler.env && which cl.exe | xargs cygpath -ms")
+        CL=$($build_dir/devenv.sh which cl.exe)
+        echo CC=$CL
+        echo CXX=$CL
+        echo PreferredToolArchitecture=x64
+      ;;
+      *)
+        echo -e "#!/bin/bash\n\"\$@\"" > $build_dir/devenv.sh
+        chmod a+x $PWD/_vulkan_build/devenv.sh
+      ;;
+    esac
+    echo devenv=$PWD/_vulkan_build/devenv.sh
   ) > $build_dir/env
+  cat $build_dir/env >&2
 }
 
 function configure_sdk_prereqs() {

@@ -8,71 +8,53 @@ on:
           required: false
           default: false
 jobs:
-  # setup-all-matrix:
-  #   if: ${{ github.event.inputs.extra_tests == 'true' }}
-  #   runs-on: ${{ matrix.runs-on }}
-  #   strategy:
-  #     matrix:
-  #       include:
-  #         - runs-on: ubuntu-latest
-  #           vulkan-remtoe-version: 1.2.154.0
-  #           vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
-  #         - runs-on: windows-latest
-  #           vulkan-version: latest
-  #           vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
-  #         - runs-on: macos-latest
-  #           vulkan-version: 1.2.189.0
-  #           vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: ./
-  #       with:
-  #         vulkan-version: ${{ matrix.vulkan-version }}
-  #     - name: Test Vulkan SDK Install
-  #       shell: bash
-  #       run: |
-  #         echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
-  #         echo "VULKAN_SDK=='$VULKAN_SDK'"
-  #         test -n "$VULKAN_SDK_VERSION"
-  #         cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
-  #         cmake --build tests/build --config release
-  #         PATH=$PATH:$PWD/VULKAN_SDK/bin ./tests/build/test_vulkan
-  # 
-  setup-ubuntu-with-fetched-config-json:
-    runs-on: ubuntu-latest
+  setup-all-matrix:
+    if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        include:
+          - runs-on: ubuntu-latest
+            vulkan-query-version: latest
+            vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+          - runs-on: windows-latest
+            vulkan-query-version: latest
+            vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+          - runs-on: macos-latest
+            vulkan-query-version: latest
+            vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch config.json
-        run: |
-          curl -o vulkan_ubuntu_config.json https://vulkan.lunarg.com/sdk/config/1.2.182.0/linux/config.json
       - uses: ./
         with:
-          vulkan-config-file: vulkan_ubuntu_config.json
-          vulkan-components: |
-            Vulkan-Headers Vulkan-Loader Vulkan-ValidationLayers
-            SPIRV-Cross SPIRV-Tools SPIRV-Reflect
-            Glslang shaderc
+          vulkan-query-version: ${{ matrix.vulkan-query-version }}
+          vulkan-components: ${{ matrix.vulkan-components }}
+          vulkan-use-cache: true
       - name: Test Vulkan SDK Install
+        shell: bash
         run: |
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
           echo "VULKAN_SDK=='$VULKAN_SDK'"
-          test -n "$VULKAN_SDK_VERSION" || exit 4
+          glslangValidator --version
+          test -n "$VULKAN_SDK_VERSION"
           cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build tests/build --config release
-          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
-          glslangValidator --version
-          spirv-cfg --version
-          glslc --version
-          which spirv-cross
-
-  # setup-ubuntu-with-local-config-json:
+          ./tests/build/test_vulkan
+  # 
+  # setup-ubuntu-with-fetched-config-json:
   #   runs-on: ubuntu-latest
   #   steps:
   #     - uses: actions/checkout@v2
+  #     - name: Fetch config.json
+  #       run: |
+  #         curl -s -o vulkan_ubuntu_config.json https://vulkan.lunarg.com/sdk/config/1.2.182.0/linux/config.json
   #     - uses: ./
   #       with:
-  #         vulkan-config-file: tests/vulkan_sdk_specs/linux.json
-  #         vulkan-components: Vulkan-Headers, Vulkan-Loader
+  #         vulkan-config-file: vulkan_ubuntu_config.json
+  #         vulkan-components: |
+  #           Vulkan-Headers Vulkan-Loader Vulkan-ValidationLayers
+  #           SPIRV-Cross SPIRV-Tools SPIRV-Reflect
+  #           Glslang
   #     - name: Test Vulkan SDK Install
   #       run: |
   #         echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
@@ -81,7 +63,29 @@ jobs:
   #         cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
   #         cmake --build tests/build --config release
   #         PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
-  
+  #         glslangValidator --version
+  #         spirv-cfg --version
+  #         which spirv-cross
+  # 
+  setup-ubuntu-with-local-config-json:
+    if: ${{ github.event.inputs.extra_tests == 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-config-file: tests/vulkan_sdk_specs/linux.json
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
+      - name: Test Vulkan SDK Install
+        run: |
+          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+          echo "VULKAN_SDK=='$VULKAN_SDK'"
+          test -n "$VULKAN_SDK_VERSION" || exit 4
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release -- -j2
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
+  # 
   # setup-windows-prebuilt:
   #   runs-on: windows-latest
   #   steps:
@@ -128,37 +132,48 @@ jobs:
   #         cmake --build tests/build --config release
   #         PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
   # 
-  # setup-windows-with-version-powershell:
-  #   runs-on: windows-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: ./
-  #       with:
-  #         vulkan-version: 1.2.154.0
-  #         vulkan-components: headers loader
-  #     - name: Test Vulkan SDK Install
-  #       shell: powershell
-  #       run: |
-  #         echo "Vulkan SDK Version=='$env:VULKAN_SDK_VERSION'"
-  #         if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
-  #         cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
-  #         cmake --build tests/build --config release
-  #         $ENV:PATH="$ENV:PATH;$ENV:VULKAN_SDK/bin"
-  #         ./tests/build/test_vulkan
+  setup-windows-with-version-powershell:
+    if: ${{ github.event.inputs.extra_tests == 'false' }}
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-query-version: 1.2.198.1
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
+
+      - name: Test Vulkan SDK Install
+        shell: powershell
+        run: |
+          echo "Vulkan SDK Version=='$env:VULKAN_SDK_VERSION'"
+          if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
+          cd tests
+          cmake -G "Visual Studio 16 2019" -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build build --config release
+          $ENV:PATH="$ENV:PATH;$ENV:VULKAN_SDK/bin"
+          tail -100 build/CMakeFiles/*.log
+          ./build/test_vulkan
   # 
-  # setup-macos-without-version:
-  #   runs-on: macos-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: ./
-  #     - name: Test Vulkan SDK Install
-  #       run: |
-  #         echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
-  #         echo "VULKAN_SDK=='$VULKAN_SDK'"
-  #         test -n "$VULKAN_SDK_VERSION"
-  #         cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
-  #         cmake --build tests/build --config release
-  #         PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
+  setup-macos-with-latest:
+    if: ${{ github.event.inputs.extra_tests == 'false' }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-query-version: 1.2.198.1
+          vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+          vulkan-use-cache: true
+      - name: Test Vulkan SDK Install
+        run: |
+          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+          echo "VULKAN_SDK=='$VULKAN_SDK'"
+          test -n "$VULKAN_SDK_VERSION"
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build tests/build --config release -- -j2
+          glslangValidator --version
+          PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
   # 
   # setup-ubuntu-without-version:
   #   if: ${{ github.event.inputs.extra_tests == 'true' }}
