@@ -1,0 +1,56 @@
+name: 'Setup Prebuilt Vulkan SDK'
+description: 'Unattended installation of prebuilt Vulkan SDK.'
+branding:
+  icon: 'play'  
+  color: 'red'  
+inputs:
+  vulkan-query-version:
+    description: 'Vulkan SDK release version (resolved via LunarG web services)'
+    default: ''
+    required: true
+  vulkan-use-cache:
+    description: 'specify whether to cache VULKAN_SDK/ results between runs (using github actions/cache)'
+    default: false
+    required: false
+runs:
+  using: "composite"
+  steps: 
+    - name: Check Vulkan SDK Cache
+      id: vulkan-cached-sdk
+      if: inputs.vulkan-use-cache != 'false'
+      uses: actions/cache@v2
+      with:
+        path: VULKAN_SDK
+        key: ${{ runner.os }}-vulkan-prebuilt-sdk-${{ inputs.vulkan-use-cache }}-${{ inputs.vulkan-query-version }}
+
+    - name: Download Prebuilt Vulkan SDK
+      shell: bash
+      run: |
+        . $GITHUB_ACTION_PATH/vulkan_prebuilt_helpers.sh
+        case `uname -s` in
+          Darwin) install_prebuilt mac ${{ inputs.vulkan-query-version }} $PWD/VULKAN_SDK ;;
+          Linux) install_prebuilt linux ${{ inputs.vulkan-query-version }} $PWD/VULKAN_SDK ;;
+          MINGW*) install_prebuilt windows ${{ inputs.vulkan-query-version }} $(pwd -W)/VULKAN_SDK ;;
+          *) echo "unknown os: `uname -s`" ; exit 5 ;;
+        esac
+        echo $PWD/VULKAN_SDK >> $GITHUB_PATH
+
+    - name: Verify Vulkan SDK
+      shell: bash
+      run: |
+        . $PWD/VULKAN_SDK/sdk.env
+        echo VULKAN_SDK=$VULKAN_SDK
+        echo VULKAN_SDK_VERSION=$VULKAN_SDK_VERSION
+        ls $VULKAN_SDK
+        $VULKAN_SDK/bin/glslangValidator --version
+
+    - name: Export VULKAN_SDK and bin/ PATH to environment
+      shell: bash
+      run: |
+        . $PWD/VULKAN_SDK/sdk.env
+        (
+          echo VULKAN_SDK=${VULKAN_SDK}
+          echo VULKAN_SDK_VERSION=${VULKAN_SDK_VERSION}
+        ) | tee -a $GITHUB_ENV
+        echo ${VULKAN_SDK}/bin | tee -a $GITHUB_PATH
+        du -hs ${VULKAN_SDK}

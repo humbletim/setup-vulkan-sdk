@@ -1,0 +1,37 @@
+name: 'Setup MSVC command wrapper'
+description: 'Configures msvc-env dev tools command line wrapper'
+branding:
+  icon: 'play'  
+  color: 'red'  
+inputs:
+  alias:
+    description: 'helper script alias name (eg: msvc-env-amd64)'
+    default: 'msvc-env'
+    required: false
+  arch:
+    description: 'target architecture (amd64, win32, etc.)'
+    default: 'amd64'
+    required: false
+runs:
+  using: "composite"
+  steps: 
+    - name: Define MSVC alias
+      shell: bash
+      run: |
+        if [[ $RUNNER_OS == 'Windows' ]] ; then
+          . $GITHUB_ACTION_PATH/msvc_helpers.sh
+          create_msvc_wrapper "${{ inputs.alias }}" "${{ inputs.arch }}" $GITHUB_ACTION_PATH/bin
+          echo $GITHUB_ACTION_PATH/bin >> $GITHUB_PATH
+        fi
+        ls -l $GITHUB_ACTION_PATH/bin
+
+    - name: Verify MSVC wrapper -- bash
+      shell: bash
+      run: |
+        ${{ inputs.alias }} which cl.exe
+
+    - name: Verify MSVC wrapper -- cmd
+      shell: cmd
+      run: |
+        echo PATH=%PATH%
+        ${{ inputs.alias }} which cl.exe

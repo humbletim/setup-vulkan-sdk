@@ -5,7 +5,7 @@ _NOTE: this is WIP documentation for upcoming v1.2.0 release in main branch; cur
   <a href="https://github.com/humbletim/setup-vulkan-sdk"><img alt="GitHub Actions status" src="https://github.com/humbletim/setup-vulkan-sdk/workflows/Setup/badge.svg"></a>
 </p>
 
-This action can be used to automatically integrate Vulkan SDK components.
+This action provides the selected Vulkan SDK components for use in GitHub Action builds.
 
 ## Usage
 
@@ -28,8 +28,9 @@ As of now the following SDK releases are known to be available across linux/mac/
 - 1.2.170.0
 - 1.2.189.0
 - 1.2.198.1
+- 1.3.204.0
 
-It is possible to specify `latest` and the action will attempt to determine the most recent release using the Vulkan SDK web service.
+It is also possible to specify `latest` (and the action will attempt to resolve using the Vulkan SDK web service).
 
 ## Action Parameters
 
