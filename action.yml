@@ -37,8 +37,7 @@ runs:
         #!/bin/sh
         shift # x86
         shift # subshell
-        shift # {0}
-        exec "\$@"
+        bash --noprofile --norc -e -o pipefail "\$@"
         EOF
           chmod a+x $GITHUB_ACTION_PATH/bin/vsdevenv
           cat $GITHUB_ACTION_PATH/bin/vsdevenv
