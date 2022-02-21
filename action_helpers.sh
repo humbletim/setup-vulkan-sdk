@@ -20,7 +20,6 @@ function resolve_vulkan_sdk_environment() {
   local query_version=$1
   local config_file=$2
   local sdk_components=$(echo "$3" | xargs echo | sed -e 's@[,; ]\+@;@g')
-  echo "sdk_components=$sdk_components" >&2
   local base_dir=$PWD
   local platform=unknown
   
@@ -39,13 +38,17 @@ function resolve_vulkan_sdk_environment() {
   VULKAN_SDK=$base_dir/VULKAN_SDK
   test -d $VULKAN_SDK || mkdir -v $VULKAN_SDK
 
+  [[ -n "$config_file" || -n "$query_version" ]] || {
+    echo "either config_file or query_version must be specified"
+    exit 9
+  }
   if [[ -z "$config_file" ]] ; then
     test -n "$query_version"
     config_file=$build_dir/config.json
     lunarg_fetch_sdk_config $platform $query_version > $config_file
   fi
 
-  test -s $config_file
+  test -s $config_file || { echo "!config_file" ; exit 3 ; }
   sdk_version=$(jq .version $config_file)
   test -n $sdk_version
   test $sdk_version != null

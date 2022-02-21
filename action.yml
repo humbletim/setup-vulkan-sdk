@@ -44,11 +44,11 @@ runs:
           cat $GITHUB_ACTION_PATH/bin/vsdevenv
         fi
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3.9
-      with:
-        limit-access-to-actor: true
- 
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3.9
+    #   with:
+    #     limit-access-to-actor: true
+
     - name: Resolve Vulkan SDK Configuration
       shell: bash
       run: |
