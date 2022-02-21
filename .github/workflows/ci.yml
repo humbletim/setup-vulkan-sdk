@@ -11,6 +11,10 @@ on:
           description: Vulkan SDK Components
           required: false
           default: 'Vulkan-Headers Vulkan-Loader Vulkan-ValidationLayers robin-hood-hashing SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang'
+        version:
+          description: Vulkan SDK Version
+          required: false
+          default: latest
 jobs:
   setup-all-matrix:
     if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}
@@ -25,7 +29,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          vulkan-query-version: ${{ matrix.vulkan-query-version }}
+          vulkan-query-version: ${{ github.event.inputs.version }}
           vulkan-components: ${{ github.event.inputs.components }}
           vulkan-use-cache: true
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
