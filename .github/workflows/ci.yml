@@ -7,6 +7,10 @@ on:
           description: 'Enable additional CI tests'
           required: false
           default: false
+        components:
+          description: Vulkan SDK Components
+          required: false
+          default: 'Vulkan-Headers Vulkan-Loader Vulkan-ValidationLayers robin-hood-hashing SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang'
 jobs:
   setup-all-matrix:
     if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}
@@ -15,20 +19,14 @@ jobs:
       matrix:
         include:
           - runs-on: ubuntu-latest
-            vulkan-query-version: latest
-            vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
           - runs-on: windows-latest
-            vulkan-query-version: latest
-            vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
           - runs-on: macos-latest
-            vulkan-query-version: latest
-            vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
     steps:
       - uses: actions/checkout@v2
       - uses: ./
         with:
           vulkan-query-version: ${{ matrix.vulkan-query-version }}
-          vulkan-components: ${{ matrix.vulkan-components }}
+          vulkan-components: ${{ github.event.inputs.components }}
           vulkan-use-cache: true
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
       - name: Test Vulkan SDK Install
