@@ -59,40 +59,6 @@ function resolve_vulkan_sdk_environment() {
     echo VULKAN_SDK_CONFIG_FILE=$config_file
     echo VULKAN_SDK_CONFIG_VERSION=$sdk_version
     echo VULKAN_SDK_COMPONENTS=\"$sdk_components\"
-    case `uname -s` in
-      MINGW*)
-        # # declare > $build_dir/_system.env
-        # function vsdevenv() {
-        #     local tmpfile=$(mktemp -p $PWD);
-        #     echo "#!/bin/bash" > $tmpfile
-        #     for x in "$@" ; do echo -n "\"""$x""\" " >> $tmpfile; done
-        #     echo >> $tmpfile
-        #     # cat $tmpfile >&2
-        #     cmd //q //c "$vsdevcmd -no_logo -arch=amd64 -host_arch=amd64 && bash $tmpfile";
-        #     rm $tmpfile
-        # }
-        # vsdevcmd=$(cygpath -ms /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/*/*/Common7/Tools/vsdevcmd.bat|sort -r|head -1)
-        # ASM=$(cygpath -ms /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/*/*/VC/Tools/MSVC/*/bin/Hostx64/*/ml.exe|sort -r|head -1)
-        # ASM_PATH=$(dirname $(cygpath $ASM))
-        # echo -e "#\!/bin/bash\nvsdevcmd=$vsdevcmd\nexport PATH=$ASM_PATH:\$PATH\n$(declare -f vsdevenv)\nvsdevenv \"\$@\"" > $build_dir/devenv.sh
-        # # vsdevenv "declare" > $build_dir/_vsdev.env
-        # # echo "compiler.env ($vsdevcmd):" >&2
-        # # grep -vxF -f $build_dir/_system.env $build_dir/_vsdev.env | tee $build_dir/compiler.env >&2
-        # # echo "//" >&2
-        # # CL=$(bash -c ". $build_dir/compiler.env && which cl.exe | xargs cygpath -ms")
-        . msvc-env/msvc_helpers.sh
-        create_msvc_wrapper devenv.sh amd64 $build_dir
-        CL=$($build_dir/devenv.sh which cl.exe)
-        echo CC=$CL
-        echo CXX=$CL
-        echo PreferredToolArchitecture=x64
-      ;;
-      *)
-        echo -e "#!/bin/bash\n\"\$@\"" > $build_dir/devenv.sh
-        chmod a+x $PWD/_vulkan_build/devenv.sh
-      ;;
-    esac
-    echo devenv=$PWD/_vulkan_build/devenv.sh
   ) > $build_dir/env
   cat $build_dir/env >&2
 }
