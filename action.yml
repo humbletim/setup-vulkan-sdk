@@ -34,7 +34,8 @@ runs:
           test -d $GITHUB_ACTION_PATH/bin || mkdir -v $GITHUB_ACTION_PATH/bin
           echo $GITHUB_ACTION_PATH/bin | tee -a $GITHUB_PATH
           cat<<-EOF > $GITHUB_ACTION_PATH/bin/vsdevenv
-        #!/bin/sh
+        #!/bin/bash
+        set -e
         shift # x86
         shift # subshell
         bash --noprofile --norc -e -o pipefail "\$@"

@@ -20,7 +20,7 @@ function resolve_vulkan_sdk_environment() {
   local query_version=$1
   local config_file=$2
   local sdk_components=$(echo "$3" | xargs echo | sed -e 's@[,; ]\+@;@g')
-  
+  echo "sdk_components=$sdk_components" >&2
   local base_dir=$PWD
   local platform=unknown
   

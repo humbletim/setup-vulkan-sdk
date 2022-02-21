@@ -67,7 +67,7 @@ jobs:
   #         which spirv-cross
   # 
   setup-ubuntu-with-local-config-json:
-    if: ${{ !github.event.inputs.extra_tests }}
+    if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -132,7 +132,7 @@ jobs:
   #         PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
   # 
   setup-windows-with-version-powershell:
-    if: ${{ !github.event.inputs.extra_tests }}
+    if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -156,7 +156,7 @@ jobs:
           ./build/test_vulkan
   # 
   setup-macos-with-latest:
-    if: ${{ !github.event.inputs.extra_tests }}
+    if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
