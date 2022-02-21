@@ -23,26 +23,7 @@ inputs:
 runs:
   using: "composite"
   steps: 
-    - uses: humbletim/vsdevenv-shell@v1
-    - name: Determine SDK build shell
-      shell: bash
-      run: |
-        if [[ $RUNNER_OS == 'Windows' ]] ; then
-          echo "using vsdevenv shell"
-        else
-          echo "emulating vsdevenv shell"
-          test -d $GITHUB_ACTION_PATH/bin || mkdir -v $GITHUB_ACTION_PATH/bin
-          echo $GITHUB_ACTION_PATH/bin | tee -a $GITHUB_PATH
-          cat<<-EOF > $GITHUB_ACTION_PATH/bin/vsdevenv
-        #!/bin/bash
-        set -e
-        shift # x86
-        shift # subshell
-        bash --noprofile --norc -e -o pipefail "\$@"
-        EOF
-          chmod a+x $GITHUB_ACTION_PATH/bin/vsdevenv
-          cat $GITHUB_ACTION_PATH/bin/vsdevenv
-        fi
+    - uses: humbletim/vsdevenv-shell@e87fcf23
 
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3.9
