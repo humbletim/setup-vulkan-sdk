@@ -33,8 +33,14 @@ runs:
           echo "emulating vsdevenv shell"
           test -d $GITHUB_ACTION_PATH/bin || mkdir -v $GITHUB_ACTION_PATH/bin
           echo $GITHUB_ACTION_PATH/bin | tee -a $GITHUB_PATH
-          ln -s $BASH $GITHUB_ACTION_PATH/bin/vsdevenv
-          ls -l $GITHUB_ACTION_PATH/bin
+          cat<<-EOF > $GITHUB_ACTION_PATH/bin/vsdevenv
+          #!/bin/sh
+          shift # x86
+          shift # subshell
+          exec "$@"
+          EOF
+          chmod a+x $GITHUB_ACTION_PATH/bin/vsdevenv
+          cat $GITHUB_ACTION_PATH/bin/vsdevenv
         fi
     - name: Resolve Vulkan SDK Configuration
       shell: bash
