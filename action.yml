@@ -24,6 +24,14 @@ runs:
   using: "composite"
   steps: 
     - uses: humbletim/vsdevenv-shell@v1
+    - name: Determine SDK build shell
+      shell: bash
+      run: |
+        if [[ $RUNNER_OS == 'Windows' ] ; then
+          echo "SDK_SHELL=vsdevenv x64 bash {0}" | tee -a $GITHUB_ENV
+        else
+          echo SDK_SHELL=bash | tee -a $GITHUB_ENV
+        fi
     - name: Resolve Vulkan SDK Configuration
       shell: bash
       run: |
@@ -84,7 +92,7 @@ runs:
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv x64 bash {0}
+      shell: ${{ env.SDK_SHELL }}
       run: |
         # cmake configure
         set -a
