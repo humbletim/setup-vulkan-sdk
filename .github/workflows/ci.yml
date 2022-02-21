@@ -10,7 +10,8 @@ on:
         components:
           description: Vulkan SDK Components
           required: false
-          default: 'Vulkan-Headers Vulkan-Loader Vulkan-ValidationLayers robin-hood-hashing SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang'
+          default: 'Vulkan-Headers Vulkan-Loader SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang'
+          # Vulkan-ValidationLayers robin-hood-hashing 
         version:
           description: Vulkan SDK Version
           required: false

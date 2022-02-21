@@ -19,8 +19,8 @@ include(cmake/json_utils.cmake)
 
 project(VulkanSDKComponents)
 
-set(AVAILABLE_COMPONENTS "Vulkan-Headers Vulkan-Loader Vulkan-ValidationLayers robin-hood-hashing SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang")
-# TODO: Vulkan-ExtensionLayer Khronos-Tools LunarG-Tools DXC gfxreconstruct MoltenVK Vulkan-Docs robin-hood-hashing shaderc
+set(AVAILABLE_COMPONENTS "Vulkan-Headers Vulkan-Loader SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang")
+# TODO: Vulkan-ExtensionLayer Khronos-Tools LunarG-Tools DXC gfxreconstruct MoltenVK Vulkan-Docs Vulkan-ValidationLayers robin-hood-hashing shaderc
 
 macro(_assert varname)
   if (NOT ${varname})
