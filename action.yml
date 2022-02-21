@@ -37,6 +37,7 @@ runs:
         #!/bin/sh
         shift # x86
         shift # subshell
+        shift # {0}
         exec "\$@"
         EOF
           chmod a+x $GITHUB_ACTION_PATH/bin/vsdevenv
