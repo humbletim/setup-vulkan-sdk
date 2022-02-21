@@ -23,9 +23,7 @@ inputs:
 runs:
   using: "composite"
   steps: 
-    # - name: Configure vsdevenv
-    #   if : runner.os == 'Windows'
-    #   uses: seanmiddleditch/gha-setup-vsdevenv@v4
+      uses: humbletim/vsdevenv-shell@v1
     - name: Resolve Vulkan SDK Configuration
       shell: bash
       run: |
@@ -69,7 +67,6 @@ runs:
       with:
         path: VULKAN_SDK
         key: ${{ runner.os }}-vulkan-cached-sdk-${{ hashFiles('_vulkan_build/cache-key.txt') }}
-        restore-keys: ${{ runner.os }}-vulkan-cached-sdk-d0b63dd95eca50e9465cd9aca24a945f23772c92569b9db5675360d00b5b5d6d
 
     - name: Configure Vulkan SDK Build Prerequisites
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
@@ -87,14 +84,13 @@ runs:
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: bash
+      shell: vsdevenv x64 bash {0}
       run: |
         # cmake configure
         set -a
         . $PWD/_vulkan_build/env
         echo CC=$CC CXX=$CXX
-        $devenv cmake --version
-        $devenv cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
+        CC=cl.exe CXX=cl.exe cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
           -DCMAKE_BUILD_TYPE=Release \
           -DVULKAN_SDK=${VULKAN_SDK} \
           -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
@@ -103,12 +99,12 @@ runs:
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: bash
+      shell: vsdevenv x64 bash {0}
       run: |
         # cmake build
         set -a
         . $PWD/_vulkan_build/env
-        $devenv cmake --build ${VULKAN_SDK_BUILD_DIR} --config Release
+        cmake --build ${VULKAN_SDK_BUILD_DIR} --config Release
 
     - name: Install Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
