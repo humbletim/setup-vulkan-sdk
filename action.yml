@@ -34,10 +34,10 @@ runs:
           test -d $GITHUB_ACTION_PATH/bin || mkdir -v $GITHUB_ACTION_PATH/bin
           echo $GITHUB_ACTION_PATH/bin | tee -a $GITHUB_PATH
           cat<<-EOF > $GITHUB_ACTION_PATH/bin/vsdevenv
-          #!/bin/sh
-          shift # x86
-          shift # subshell
-          exec "$@"
+        #!/bin/sh
+        shift # x86
+        shift # subshell
+        exec "\$@"
         EOF
           chmod a+x $GITHUB_ACTION_PATH/bin/vsdevenv
           cat $GITHUB_ACTION_PATH/bin/vsdevenv
