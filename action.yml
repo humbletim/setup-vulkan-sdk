@@ -107,7 +107,11 @@ runs:
         # cmake configure
         set -a
         . $PWD/_vulkan_build/env
-        CC=cl.exe CXX=cl.exe cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
+        if [[ $RUNNER_OS == 'Windows' ]] ; then
+          CC=cl.exe
+          CXX=cl.exe
+        fi
+        cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
           -DCMAKE_BUILD_TYPE=Release \
           -DVULKAN_SDK=${VULKAN_SDK} \
           -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
