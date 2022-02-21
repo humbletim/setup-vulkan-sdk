@@ -28,9 +28,13 @@ runs:
       shell: bash
       run: |
         if [[ $RUNNER_OS == 'Windows' ] ; then
-          echo "SDK_SHELL=vsdevenv x64 bash {0}" | tee -a $GITHUB_ENV
+          echo "using vsdevenv shell"
         else
-          echo SDK_SHELL=bash | tee -a $GITHUB_ENV
+          echo "emulating vsdevenv shell"
+          test -d $GITHUB_ACTION_PATH/bin || mkdir -v $GITHUB_ACTION_PATH/bin
+          echo $GITHUB_ACTION_PATH/bin | tee -a $GITHUB_PATH
+          ln -s $BASH $GITHUB_ACTION_PATH/bin/vsdevenv
+          ls -l $GITHUB_ACTION_PATH/bin
         fi
     - name: Resolve Vulkan SDK Configuration
       shell: bash
@@ -92,12 +96,11 @@ runs:
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: ${{ env.SDK_SHELL }}
+      shell: vsdevenv x64 bash {0}
       run: |
         # cmake configure
         set -a
         . $PWD/_vulkan_build/env
-        echo CC=$CC CXX=$CXX
         CC=cl.exe CXX=cl.exe cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
           -DCMAKE_BUILD_TYPE=Release \
           -DVULKAN_SDK=${VULKAN_SDK} \
