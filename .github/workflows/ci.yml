@@ -30,6 +30,7 @@ jobs:
           vulkan-query-version: ${{ matrix.vulkan-query-version }}
           vulkan-components: ${{ matrix.vulkan-components }}
           vulkan-use-cache: true
+      - uses: seanmiddleditch/gha-setup-vsdevenv@v4
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
