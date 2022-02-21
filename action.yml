@@ -27,7 +27,7 @@ runs:
     - name: Determine SDK build shell
       shell: bash
       run: |
-        if [[ $RUNNER_OS == 'Windows' ] ; then
+        if [[ $RUNNER_OS == 'Windows' ]] ; then
           echo "using vsdevenv shell"
         else
           echo "emulating vsdevenv shell"
