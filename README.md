@@ -4,7 +4,7 @@
 
 This action builds and integrates individual Vulkan SDK components directly from Khronos source repos.
 
-For projects that only depend on Vulkan SDK headers and loader to compile and link against, this action is likely the lightest weight option. It typically takes around a minute or so of build prep time and the resulting VULKAN_SDK folder consumes around ~20MB of disk storage (which can be automatically cached for even faster repeat builds).
+It is meant to offer a more lightweight option for CI/CD than installing the full Vulkan SDK, especially for projects that only need the Vulkan headers and loader available. Building those two SDK components from Khronos source usually takes around a minute and afterwards only uses around ~20MB of disk space (compared to the 600M-1.8GB that a full SDK install would require).
 
 ## Usage
 
@@ -21,7 +21,7 @@ _note: if new to GitHub Actions please see GitHub Help Documentation [Quickstart
      vulkan-use-cache: true
 ```
 
-SDK version numbers are resolved into corresponding Khronos repos and commit points using the official LunarG [Vulkan SDK web services API](https://vulkan.lunarg.com/content/view/latest-sdk-version-api).
+SDK version numbers are resolved into corresponding Khronos repos and commit points using the official LunarG [SDK web API](https://vulkan.lunarg.com/content/view/latest-sdk-version-api).
 
 As of now the following SDK release numbers are known to be usable across all three primary platforms (linux/mac/windows):
 - 1.2.162.0
@@ -33,7 +33,7 @@ As of now the following SDK release numbers are known to be usable across all th
 
 It is also possible to specify `latest` and the action will attempt to resolve automatically.
 
-NOTE: For production workflows it is recommended to create project-local copies of the desired SDK config.json(s) instead (see [Advanced](#Advanced-integration) example below).
+NOTE: For production workflows it is recommended to create project-local copies of sdk config.json(s); see [Advanced](#Advanced-integration) example below.
 
 ## Including Vulkan SDK command line tools
 
