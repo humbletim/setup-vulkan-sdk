@@ -1,4 +1,4 @@
-# setup-vulkan-sdk v1.2.0-beta
+# setup-vulkan-sdk v1.2.0
 
 [![test setup-vulkan-sdk](https://github.com/humbletim/setup-vulkan-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/humbletim/setup-vulkan-sdk/actions/workflows/ci.yml)
 
@@ -14,7 +14,7 @@ _note: if new to GitHub Actions please see GitHub Help Documentation [Quickstart
 
 ```yaml
   -name: Prepare Vulkan SDK
-   uses: humbletim/setup-vulkan-sdk@v1.2.0-beta
+   uses: humbletim/setup-vulkan-sdk@v1.2.0
    with:
      vulkan-query-version: 1.3.204.0
      vulkan-components: Vulkan-Headers, Vulkan-Loader
@@ -68,7 +68,7 @@ However, depending on your project's needs, it might make more sense to use unat
       curl -o vulkan-sdk-config.json https://vulkan.lunarg.com/sdk/config/1.3.204.0/linux/config.json
 
   - name: Configure Vulkan SDK using the downloaded spec
-    uses: humbletim/setup-vulkan-sdk@v1.2.0-beta
+    uses: humbletim/setup-vulkan-sdk@v1.2.0
     with:
       vulkan-config-file: vulkan-sdk-config.json
       vulkan-components: Vulkan-Headers, Vulkan-Loader
