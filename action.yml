@@ -1,5 +1,5 @@
 name: 'Setup Vulkan SDK'
-description: 'Configures Vulkan SDK and sets VULKAN_SDK environment variable.'
+description: 'Automatically builds Vulkan SDK components from source.'
 branding:
   icon: 'play'  
   color: 'red'  
