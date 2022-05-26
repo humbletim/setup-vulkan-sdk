@@ -22,7 +22,23 @@ endfunction()
 function(json_coalesce_subprops _json _OUTVAR)
     cmake_parse_arguments(_sub "" "" "PROPERTIES" ${ARGN})
     foreach(_arg IN LISTS _sub_PROPERTIES)
+
+        set(route "${_sub_UNPARSED_ARGUMENTS}")
+        separate_arguments(route)
+        list(LENGTH route len)
+        math(EXPR last_index "${len} - 1")
+        list(GET route ${last_index} _comp)
+
+        get_property(_value GLOBAL PROPERTY "${_comp}_${_arg}")
+
+        if(NOT ${_value} MATCHES "-NOTFOUND|^$|^null$|^undefined$")
+          message(STATUS " >>> Found ${_comp}_${_arg} :: ${_value}")
+          set(${_OUTVAR} ${_value} PARENT_SCOPE)
+          return()
+        endif()
+
         string(JSON _value ERROR_VARIABLE jsonerror GET "${_json}" ${_sub_UNPARSED_ARGUMENTS} "${_arg}")
+
         if (NOT ${_value} MATCHES "-NOTFOUND|^$|^null$|^undefined$")
           set(${_OUTVAR} ${_value} PARENT_SCOPE)
           return()
