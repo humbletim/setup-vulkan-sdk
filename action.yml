@@ -45,7 +45,10 @@ runs:
       run: |
         # dev prerequisites
         case `uname -s` in
-          Darwin) ;;
+          Darwin) 
+            brew install gnu-sed
+            echo "/usr/local/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
+          ;;
           Linux) 
             sudo apt-get -qq update 
             sudo apt-get -qq install -y libwayland-dev libxrandr-dev
