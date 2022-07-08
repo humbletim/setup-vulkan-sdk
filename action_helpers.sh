@@ -4,9 +4,11 @@ set -e
 
 function lunarg_get_latest_sdk_version() {
   local platform=$1
+  echo "platform: $platform"
   local url=https://vulkan.lunarg.com/sdk/latest/$platform.txt
   echo "note: resolving latest via webservices lookup: $url" >&2
   curl -sL https://vulkan.lunarg.com/sdk/latest/$platform.txt
+  echo "sdk version not null"
 }
 
 remote_url_used=
@@ -47,11 +49,14 @@ function resolve_vulkan_sdk_environment() {
     config_file=$build_dir/config.json
     lunarg_fetch_sdk_config $platform $query_version > $config_file
   fi
+  echo "config file here"
+
 
   test -s $config_file || { echo "!config_file" ; exit 3 ; }
   sdk_version=$(jq .version $config_file)
   test -n $sdk_version
   test $sdk_version != null
+  echo "sdk version not null"
   
   (
     echo VULKAN_SDK_BUILD_DIR=$build_dir
