@@ -51,9 +51,10 @@ function resolve_vulkan_sdk_environment() {
   fi
   echo "config file here"
 
-
   test -s $config_file || { echo "!config_file" ; exit 3 ; }
+  echo "test"
   sdk_version=$(jq .version $config_file)
+  echo "$sdk_version"
   test -n $sdk_version
   test $sdk_version != null
   echo "sdk version not null"
