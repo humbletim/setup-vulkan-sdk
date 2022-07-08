@@ -52,7 +52,7 @@ function resolve_vulkan_sdk_environment() {
   echo "config file here"
 
   test -s $config_file || { echo "!config_file" ; exit 3 ; }
-  echo "test"
+  echo "test $config_file"
   sdk_version=$(jq .version $config_file)
   echo "$sdk_version"
   test -n $sdk_version
