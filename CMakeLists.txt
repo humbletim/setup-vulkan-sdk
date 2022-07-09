@@ -22,10 +22,6 @@ project(VulkanSDKComponents)
 set(AVAILABLE_COMPONENTS "Vulkan-Headers Vulkan-Loader SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang shaderc")
 # TODO: Vulkan-ExtensionLayer Khronos-Tools LunarG-Tools DXC gfxreconstruct MoltenVK Vulkan-Docs Vulkan-ValidationLayers robin-hood-hashing shaderc
 
-if(NOT CMAKE_DEBUG_POSTFIX)
-  set(CMAKE_DEBUG_POSTFIX d)
-endif()
-
 macro(_assert varname)
   if (NOT ${varname})
     message(FATAL_ERROR "assertion failed (${varname}):\n" ${ARGN})
@@ -302,6 +298,7 @@ function(setup_component name parentName)
         -DCMAKE_INSTALL_MESSAGE=NEVER
         -DCMAKE_BUILD_TYPE=$<CONFIG>
         -DCMAKE_INSTALL_PREFIX=${VULKAN_SDK}
+        -DCMAKE_DEBUG_POSTFIX=d
         # -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         # -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         # -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON
