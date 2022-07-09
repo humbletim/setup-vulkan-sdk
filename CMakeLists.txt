@@ -298,13 +298,15 @@ function(setup_component name parentName)
         -DCMAKE_INSTALL_MESSAGE=NEVER
         -DCMAKE_BUILD_TYPE=$<CONFIG>
         -DCMAKE_INSTALL_PREFIX=${VULKAN_SDK}
-        -DCMAKE_DEBUG_POSTFIX=d
         # -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         # -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         # -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON
     )
 
     list(APPEND cmake_args ${cmake_extra})
+    if(NOT ("${name}" STREQUAL "Vulkan-Loader"))
+      list(APPEND cmake_args -DCMAKE_DEBUG_POSTFIX=d)
+    endif()
     message(STATUS "ExternalProject_Add ${name} ${ref} deps=[${deps}] cmake_extra=[${cmake_extra}]")
     ExternalProject_Add("${name}"
       GIT_REPOSITORY "${url}"
