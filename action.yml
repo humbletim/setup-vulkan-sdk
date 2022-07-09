@@ -79,7 +79,7 @@ runs:
       uses: actions/cache@v2
       with:
         path: VULKAN_SDK
-        key: ${{ runner.os }}-vulkan-cached-sdk-${{ hashFiles('_vulkan_build/cache-key.txt') }}
+        key: ${{ runner.os }}-vulkan-cached-sdk-${{inputs.build-config}}-${{ hashFiles('_vulkan_build/cache-key.txt') }}
 
     - name: Configure Vulkan SDK Build Prerequisites
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
