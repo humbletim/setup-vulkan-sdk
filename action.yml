@@ -20,7 +20,7 @@ inputs:
     description: 'specify whether to cache VULKAN_SDK/ results between runs (using github actions/cache)'
     default: false
     required: false
-  build-type:
+  build-config:
     description: 'CMake build type to be used in the build process'
     default: 'Release'
     required: false
@@ -107,7 +107,7 @@ runs:
           CXX=cl.exe
         fi
         cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
-          -DCMAKE_BUILD_TYPE=${{ inputs.build-type }} \
+          -DCMAKE_BUILD_TYPE=${{ inputs.build-config }} \
           -DVULKAN_SDK=${VULKAN_SDK} \
           -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
           -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
@@ -120,7 +120,7 @@ runs:
         # cmake build
         set -a
         . $PWD/_vulkan_build/env
-        cmake --build ${VULKAN_SDK_BUILD_DIR} --config ${{ inputs.build-type }}
+        cmake --build ${VULKAN_SDK_BUILD_DIR} --config ${{ inputs.build-config }}
 
     - name: Install Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
