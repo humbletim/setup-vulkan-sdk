@@ -327,7 +327,7 @@ function(setup_component name parentName)
 
     list(APPEND cmake_args ${cmake_extra})
     message(STATUS "ExternalProject_Add ${name} ${ref} deps=[${deps}] cmake_extra=[${cmake_extra}]")
-    ExternalProject_Add("${name}"
+    ExternalProject_Add("${name}d"
       GIT_REPOSITORY "${url}"
       GIT_TAG "${ref}"
       GIT_PROGRESS OFF
