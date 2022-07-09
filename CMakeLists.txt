@@ -314,13 +314,30 @@ function(setup_component name parentName)
       DEPENDS ${deps}
       PATCH_COMMAND ${patch_command}
       INSTALL_COMMAND ${install_command}
-      BUILD_COMMAND ${CMAKE_COMMAND} -E echo "Starting Release build"
-      COMMAND       ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config Release
-      COMMAND       ${CMAKE_COMMAND} -E echo "Release build complete"
-      COMMAND       ${CMAKE_COMMAND} -E echo "Starting Debug build"
-      COMMAND       ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config Debug
-      COMMAND       ${CMAKE_COMMAND} -E echo "Debug build complete"
     )
+
+    set(cmake_args
+        -DCMAKE_INSTALL_MESSAGE=NEVER
+        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_INSTALL_PREFIX=${VULKAN_SDK}
+        # -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+        # -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+        # -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON
+    )
+
+    list(APPEND cmake_args ${cmake_extra})
+    message(STATUS "ExternalProject_Add ${name} ${ref} deps=[${deps}] cmake_extra=[${cmake_extra}]")
+    ExternalProject_Add("${name}"
+      GIT_REPOSITORY "${url}"
+      GIT_TAG "${ref}"
+      GIT_PROGRESS OFF
+      CMAKE_CACHE_ARGS ${cmake_extra}
+      CMAKE_ARGS ${cmake_args}
+      DEPENDS ${deps}
+      PATCH_COMMAND ${patch_command}
+      INSTALL_COMMAND ${install_command}
+    )
+
     set_property(GLOBAL APPEND PROPERTY VULKAN_COMPONENTS_PROCESSED ${name})
 endfunction()
 
