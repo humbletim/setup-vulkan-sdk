@@ -296,7 +296,7 @@ function(setup_component name parentName)
     string(REPLACE " " ";" cmake_extra "${cmake_extra}")
     set(cmake_args
         -DCMAKE_INSTALL_MESSAGE=NEVER
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=$<CONFIG>
         -DCMAKE_INSTALL_PREFIX=${VULKAN_SDK}
         # -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         # -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
