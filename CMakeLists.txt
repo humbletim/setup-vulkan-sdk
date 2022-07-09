@@ -314,8 +314,12 @@ function(setup_component name parentName)
       DEPENDS ${deps}
       PATCH_COMMAND ${patch_command}
       INSTALL_COMMAND ${install_command}
-      BUILD_COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config Debug
-      COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config Release
+      BUILD_COMMAND ${CMAKE_COMMAND} -E echo "Starting Release build"
+      COMMAND       ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config Release
+      COMMAND       ${CMAKE_COMMAND} -E echo "Release build complete"
+      COMMAND       ${CMAKE_COMMAND} -E echo "Starting Debug build"
+      COMMAND       ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config Debug
+      COMMAND       ${CMAKE_COMMAND} -E echo "Debug build complete"
     )
     set_property(GLOBAL APPEND PROPERTY VULKAN_COMPONENTS_PROCESSED ${name})
 endfunction()
