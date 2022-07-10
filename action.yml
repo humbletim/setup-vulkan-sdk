@@ -120,7 +120,7 @@ runs:
         # cmake build
         set -a
         . $PWD/_vulkan_build/env
-        cmake --build ${VULKAN_SDK_BUILD_DIR} --config ${{ inputs.build-config }}
+        cmake --build ${VULKAN_SDK_BUILD_DIR} --config ${{ inputs.build-config }} --parallel 8
 
     - name: Install Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
