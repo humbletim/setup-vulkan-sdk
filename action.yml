@@ -129,7 +129,7 @@ runs:
         # cmake install
         set -a
         . $PWD/_vulkan_build/env
-        cmake --install ${VULKAN_SDK_BUILD_DIR}
+        cmake --install ${VULKAN_SDK_BUILD_DIR} --config ${{ inputs.build-config }}
 
     - name: Verify Vulkan SDK Installation
       shell: bash
