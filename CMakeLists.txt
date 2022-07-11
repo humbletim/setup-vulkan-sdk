@@ -260,6 +260,9 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
       set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
     endif()
 
+    set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(CMAKE_DEBUG_POSTFIX d)
+
   ]====])
 
   set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt")
