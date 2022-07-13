@@ -260,15 +260,10 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
       set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
     endif()
 
-    if("$<CONFIG:Debug>")
-      message(STATUS "config debug generator expresion")
-      set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    # set(CMAKE_DEBUG_POSTFIX d
-    endif()
-
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "config debug strqual")
-    set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
+      message(STATUS "config debug strqual")
+      set(CMAKE_DEBUG_POSTFIX d)
+      # set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
     endif()
 
   ]====])
