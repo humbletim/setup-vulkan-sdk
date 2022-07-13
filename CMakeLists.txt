@@ -262,8 +262,8 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
       message(STATUS "config debug strqual")
-      set(CMAKE_DEBUG_POSTFIX d)
-      # set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
+      # set(CMAKE_DEBUG_POSTFIX d)
+      set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
     endif()
 
   ]====])
