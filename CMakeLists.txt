@@ -101,7 +101,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     find_library(SPIRV_TOOLS_LIBRARY_DEBUG NAMES SPIRV-Toolsd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     find_library(SPIRV_TOOLS_LIBRARY_RELEASE NAMES SPIRV-Tools HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_path(SPIRV_TOOLS_INCLUDE_DIR NAMES spirv-tools/libspirv.h HINTS ${CMAKE_INSTALL_PREFIX} spirv-tools PATH_SUFFIXES include)
+    find_path(SPIRV_TOOLS_INCLUDE_DIR NAMES spirv-tools/libspirv.h HINTS ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/include/spirv-tools PATH_SUFFIXES include)
     find_library(SPIRV_TOOLS_OPT_LIBRARY_DEBUG NAMES SPIRV-Tools-optd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     find_library(SPIRV_TOOLS_OPT_LIBRARY_RELEASE NAMES SPIRV-Tools-opt HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
     
@@ -243,7 +243,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
           INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/glslang"
     )
 
-    target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools-opt)
+    target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools SPIRV-Tools-opt glslang)
 
     find_package_handle_standard_args(glslangValidator
         "Cannot find glslangValidator, Shader won't be compiled offline"
@@ -255,7 +255,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     file(COPY "CHANGES" DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
-    if(WIN32)
+    if(MSVC)
       set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
     endif()
 
