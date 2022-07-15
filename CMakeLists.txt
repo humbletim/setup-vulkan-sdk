@@ -90,11 +90,23 @@ endif()
 if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
 
+    function(ls_path path)
+      if(WIN32)
+        execute_process(COMMAND powershell "-c" "ls ${path}")
+      else()
+        execute_process(COMMAND bash "-c" "ls ${path}")
+      endif()
+
+    endfunction(ls_path path)
+
     message(STATUS "======================== SHADER PATCH ========================")
 
     set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
     set(SPIRV-Headers_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
     set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
+
+    message(STATUS "spirv-tools_SOURCE_DIR")
+    ls_path(spirv-tools_SOURCE_DIR)
 
     include(FindPackageHandleStandardArgs)
     include(SelectLibraryConfigurations)
@@ -106,6 +118,15 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     find_path(SPIRV_TOOLS_INCLUDE_DIR NAMES spirv-tools/libspirv.h HINTS ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/include/spirv-tools PATH_SUFFIXES include)
     find_library(SPIRV_TOOLS_OPT_LIBRARY_DEBUG NAMES SPIRV-Tools-optd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     find_library(SPIRV_TOOLS_OPT_LIBRARY_RELEASE NAMES SPIRV-Tools-opt HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+
+    message(STATUS "SPIRV_TOOLS_INCLUDE_DIR")
+    ls_path(SPIRV_TOOLS_INCLUDE_DIR)
+
+    message(STATUS "CMAKE_INSTALL_PREFIX/include/")
+    ls_path(${CMAKE_INSTALL_PREFIX}/include/)
+
+    message(STATUS "CMAKE_INSTALL_PREFIX/include/spirv-tools")
+    ls_path(${CMAKE_INSTALL_PREFIX}/include/spirv-tools)
     
     select_library_configurations(SPIRV_TOOLS)
     select_library_configurations(SPIRV_TOOLS_OPT)
@@ -157,6 +178,10 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     find_path(GLSLANG_INCLUDE_DIR NAMES glslang/Public/ShaderLang.h HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
     find_path(SPIRV_INCLUDE_DIR NAMES SPIRV/spirv.hpp HINTS ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/include/glslang PATH_SUFFIXES include)
     find_program(GLSLANG_VALIDATOR_EXE NAMES glslangValidator HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES bin)
+
+    
+    message(STATUS "SPIRV_INCLUDE_DIR")
+    ls_path(${SPIRV_INCLUDE_DIR})
     
     select_library_configurations(GLSLANG)
     select_library_configurations(OGLCOMPILER)
@@ -246,6 +271,9 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
           INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/glslang"
     )
 
+    target_link_directories(glslang 
+      INTERFACE ${CMAKE_INSTALL_PREFIX}/include
+      INTERFACE ${CMAKE_INSTALL_PREFIX}/include/glslang)
     target_link_libraries(glslang INTERFACE HLSL OSDependent OGLCompiler GenericCodeGen MachineIndependent SPIRV-Tools SPIRV-Tools-opt)
     
     add_library(SPIRV STATIC IMPORTED)
@@ -256,7 +284,12 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
           IMPORTED_LOCATION ${SPIRV_LIBRARY}
           INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/glslang;${SPIRV_INCLUDE_DIR}"
     )
-    
+
+    target_link_directories(SPIRV 
+      INTERFACE ${CMAKE_INSTALL_PREFIX}/include
+      INTERFACE ${CMAKE_INSTALL_PREFIX}/include/glslang
+      INTERFACE ${SPIRV_INCLUDE_DIR})
+
     target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools-opt)
 
     find_package_handle_standard_args(glslangValidator
