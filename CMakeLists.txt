@@ -106,7 +106,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
 
     message(STATUS "spirv-tools_SOURCE_DIR")
-    ls_path(spirv-tools_SOURCE_DIR)
+    ls_path(${spirv-tools_SOURCE_DIR})
 
     include(FindPackageHandleStandardArgs)
     include(SelectLibraryConfigurations)
@@ -120,7 +120,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     find_library(SPIRV_TOOLS_OPT_LIBRARY_RELEASE NAMES SPIRV-Tools-opt HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
 
     message(STATUS "SPIRV_TOOLS_INCLUDE_DIR")
-    ls_path(SPIRV_TOOLS_INCLUDE_DIR)
+    ls_path(${SPIRV_TOOLS_INCLUDE_DIR})
 
     message(STATUS "CMAKE_INSTALL_PREFIX/include/")
     ls_path(${CMAKE_INSTALL_PREFIX}/include/)
