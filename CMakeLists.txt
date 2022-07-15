@@ -330,6 +330,12 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # OSDependent
     # OGLCompiler
 
+    include_directories(${CMAKE_INSTALL_PREFIX}/include)
+    include_directories(${CMAKE_INSTALL_PREFIX}/include/glslang)
+    include_directories(${CMAKE_INSTALL_PREFIX}/include/spirv)
+    include_directories(${CMAKE_INSTALL_PREFIX}/include/spirv-tools)
+
+
   ]====])
 
   set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt")
