@@ -99,7 +99,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     include(FindPackageHandleStandardArgs)
     include(SelectLibraryConfigurations)
 
-    set(CMAKE_DEBUG_POSTFIX "")
+    set(CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
 
     find_library(SPIRV_TOOLS_LIBRARY_DEBUG NAMES SPIRV-Toolsd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     find_library(SPIRV_TOOLS_LIBRARY_RELEASE NAMES SPIRV-Tools HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
