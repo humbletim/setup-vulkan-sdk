@@ -229,6 +229,14 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     
     target_link_libraries(MachineIndependent INTERFACE OGLCompiler OSDependent GenericCodeGen)
 
+    add_library(SPVRemapper STATIC IMPORTED)
+    set_property(TARGET SPVRemapper APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    set_target_properties(
+      SPVRemapper
+        PROPERTIES
+          IMPORTED_LOCATION ${SPVREMAPPER_LIBRARY}
+    )
+
     add_library(glslang STATIC IMPORTED)
     set_property(TARGET glslang APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
     set_target_properties(
