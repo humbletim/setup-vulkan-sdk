@@ -100,8 +100,12 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     message(STATUS "======================== SHADERC PATCH ========================")
 
-    find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h HINTS "${CMAKE_INSTALL_PREFIX}/include")
-    ls_path(${glslang_SOURCE_DIR})
+    
+    find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h)
+    # set(glslang_SOURCE_DIR "${glslang_SOURCE_DIR}" CACHE STRING "" FORCE)
+
+    # find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h HINTS "${CMAKE_INSTALL_PREFIX}/include")
+    # ls_path(${glslang_SOURCE_DIR})
     # set(glslang_SOURCE_DIR "${glslang_SOURCE_DIR}/glslang" "${glslang_SOURCE_DIR}" CACHE STRING "" FORCE)
 
     set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
