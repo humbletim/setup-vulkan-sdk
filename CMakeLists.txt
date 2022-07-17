@@ -309,9 +309,20 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     # target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools-opt)
 
+    include(CMakeFindDependencyMacro)
+
+    find_dependency(Threads)
+
     foreach(targets OGLCompiler OSDependent glslang glslang-default-resource-limits glslangValidator HLSL SPIRV spirv-remap SPVRemapper)
       include("${CMAKE_CURRENT_LIST_DIR}/${targets}Targets.cmake" OPTIONAL)
     endforeach()
+
+    set_property(TARGET glslang PROPERTY IMPORTED_GLOBAL TRUE)
+    set_property(TARGET OSDependent PROPERTY IMPORTED_GLOBAL TRUE)
+    set_property(TARGET OGLCompiler PROPERTY IMPORTED_GLOBAL TRUE)
+    set_property(TARGET HLSL PROPERTY IMPORTED_GLOBAL TRUE)
+    set_property(TARGET SPIRV PROPERTY IMPORTED_GLOBAL TRUE)
+    set_property(TARGET MachineIndependent PROPERTY IMPORTED_GLOBAL TRUE)
 
     # find_package_handle_standard_args(glslangValidator
     #     "Cannot find glslangValidator, Shader won't be compiled offline"
