@@ -156,5 +156,5 @@ runs:
           echo VULKAN_SDK_VERSION=${VULKAN_SDK_VERSION}
         ) | tee -a $GITHUB_ENV
         echo ${VULKAN_SDK}/bin | tee -a $GITHUB_PATH
-        rm -rf $PWD/_vulkan_build
+        # rm -rf $PWD/_vulkan_build
         du -hs ${VULKAN_SDK}
