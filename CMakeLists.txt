@@ -108,8 +108,8 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
 
     # -DSHADERC_GLSLANG_DIR=${CMAKE_CURRENT_LIST_DIR}/glslang -DSHADERC_SPIRV_TOOLS_DIR=${CMAKE_CURRENT_LIST_DIR}/spirv-tools
-    set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_LIST_DIR}/glslang" CACHE STRING "" FORCE)
-    set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_LIST_DIR}/spirv-tools" CACHE STRING "" FORCE)
+    # set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_LIST_DIR}/glslang" CACHE STRING "" FORCE)
+    # set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_LIST_DIR}/spirv-tools" CACHE STRING "" FORCE)
 
     message(STATUS "spirv-tools_SOURCE_DIR")
     ls_path(${spirv-tools_SOURCE_DIR})
@@ -350,7 +350,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
   ]====])
 
-  set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i -e \'52a include(${CMAKE_BINARY_DIR}/shaderc_util_patch.cmake)\' libshaderc_util/CMakeLists.txt && sed -i \'142,146d\' CMakeLists.txt&& sed -i \'56d\' glslc/CMakeLists.txt")
+  set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i -e \'52a include(${CMAKE_BINARY_DIR}/shaderc_util_patch.cmake)\' libshaderc_util/CMakeLists.txt && sed -i \'142,146d\' CMakeLists.txt && sed -i \'56d\' glslc/CMakeLists.txt")
 
   # set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra)
 
