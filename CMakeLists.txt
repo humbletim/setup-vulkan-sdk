@@ -100,13 +100,10 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     message(STATUS "======================== SHADERC PATCH ========================")
 
-    # file(COPY "${CMAKE_CURRENT_LIST_DIR}/build-version.inc" DESTINATION "${SOURCE_PATH}/glslc/src")
     file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/glslc/src/build-version.inc" [["shaderc v2021.1-dev unknown hash, 2021-06-21\n"]])
     
-    # find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h)
-    # set(glslang_SOURCE_DIR "${glslang_SOURCE_DIR}" CACHE STRING "" FORCE)
-
-    # find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h HINTS "${CMAKE_INSTALL_PREFIX}/include")
+    find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h HINTS "${CMAKE_INSTALL_PREFIX}/include")
+    message(STATUS ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     # ls_path(${glslang_SOURCE_DIR})
     # set(glslang_SOURCE_DIR "${glslang_SOURCE_DIR}/glslang" "${glslang_SOURCE_DIR}" CACHE STRING "" FORCE)
 
@@ -151,8 +148,8 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
       SPIRV_TOOLS_INCLUDE_DIR
     )
 
-    add_library(SPIRV-Tools UNKNOWN IMPORTED)
-    set_property(TARGET SPIRV-Tools APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Debug>")
+    add_library(SPIRV-Tools STATIC IMPORTED GLOBAL)
+    set_property(TARGET SPIRV-Tools APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
     set_target_properties(
       SPIRV-Tools
         PROPERTIES
@@ -171,154 +168,158 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
           INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR}
     )
 
-    set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_LINK_LIBRARIES SPIRV-Tools)
+    # set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_LINK_LIBRARIES SPIRV-Tools)
 
-    find_library(GLSLANG_LIBRARY_RELEASE NAMES glslang HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_library(OGLCOMPILER_LIBRARY_RELEASE NAMES OGLCompiler HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_library(OSDEPENDENT_LIBRARY_RELEASE NAMES OSDependent HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_library(GENERICCODEGEN_LIBRARY_RELEASE NAMES GenericCodeGen HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_library(MACHINEINDEPENDENT_LIBRARY_RELEASE NAMES MachineIndependent HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_library(HLSL_LIBRARY_RELEASE NAMES HLSL HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES  lib)
-    find_library(SPIRV_LIBRARY_RELEASE NAMES SPIRV HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_library(SPVREMAPPER_LIBRARY_RELEASE NAMES SPVRemapper HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_library(GLSLANG_LIBRARY_DEBUG NAMES glslangd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
-    find_library(OGLCOMPILER_LIBRARY_DEBUG NAMES OGLCompilerd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
-    find_library(OSDEPENDENT_LIBRARY_DEBUG NAMES OSDependentd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
-    find_library(SPIRV_LIBRARY_DEBUG NAMES SPIRVd PATH_SUFFIXES HINTS ${CMAKE_INSTALL_PREFIX} DEBUG/lib)
-    find_library(GENERICCODEGEN_LIBRARY_DEBUG NAMES GenericCodeGend HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
-    find_library(MACHINEINDEPENDENT_LIBRARY_DEBUG NAMES MachineIndependentd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
-    find_library(HLSL_LIBRARY_DEBUG NAMES HLSLd PATH_SUFFIXES HINTS ${CMAKE_INSTALL_PREFIX} DEBUG/lib)
-    find_library(SPVREMAPPER_LIBRARY_DEBUG NAMES SPVRemapperd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
-    find_path(GLSLANG_INCLUDE_DIR NAMES glslang/Public/ShaderLang.h HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
-    find_path(SPIRV_INCLUDE_DIR NAMES SPIRV/spirv.hpp HINTS ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/include/glslang PATH_SUFFIXES include)
+    # find_library(GLSLANG_LIBRARY_RELEASE NAMES glslang HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_library(OGLCOMPILER_LIBRARY_RELEASE NAMES OGLCompiler HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_library(OSDEPENDENT_LIBRARY_RELEASE NAMES OSDependent HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_library(GENERICCODEGEN_LIBRARY_RELEASE NAMES GenericCodeGen HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_library(MACHINEINDEPENDENT_LIBRARY_RELEASE NAMES MachineIndependent HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_library(HLSL_LIBRARY_RELEASE NAMES HLSL HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES  lib)
+    # find_library(SPIRV_LIBRARY_RELEASE NAMES SPIRV HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_library(SPVREMAPPER_LIBRARY_RELEASE NAMES SPVRemapper HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_library(GLSLANG_LIBRARY_DEBUG NAMES glslangd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
+    # find_library(OGLCOMPILER_LIBRARY_DEBUG NAMES OGLCompilerd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
+    # find_library(OSDEPENDENT_LIBRARY_DEBUG NAMES OSDependentd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
+    # find_library(SPIRV_LIBRARY_DEBUG NAMES SPIRVd PATH_SUFFIXES HINTS ${CMAKE_INSTALL_PREFIX} DEBUG/lib)
+    # find_library(GENERICCODEGEN_LIBRARY_DEBUG NAMES GenericCodeGend HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
+    # find_library(MACHINEINDEPENDENT_LIBRARY_DEBUG NAMES MachineIndependentd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
+    # find_library(HLSL_LIBRARY_DEBUG NAMES HLSLd PATH_SUFFIXES HINTS ${CMAKE_INSTALL_PREFIX} DEBUG/lib)
+    # find_library(SPVREMAPPER_LIBRARY_DEBUG NAMES SPVRemapperd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
+    # find_path(GLSLANG_INCLUDE_DIR NAMES glslang/Public/ShaderLang.h HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
+    # find_path(SPIRV_INCLUDE_DIR NAMES SPIRV/spirv.hpp HINTS ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/include/glslang PATH_SUFFIXES include)
     find_program(GLSLANG_VALIDATOR_EXE NAMES glslangValidator HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES bin)
     
-    message(STATUS "CMAKE_INSTALL_PREFIX")
-    ls_path(${CMAKE_INSTALL_PREFIX})
+    # message(STATUS "CMAKE_INSTALL_PREFIX")
+    # ls_path(${CMAKE_INSTALL_PREFIX})
     
-    message(STATUS "SPIRV_INCLUDE_DIR")
-    ls_path(${SPIRV_INCLUDE_DIR})
+    # message(STATUS "SPIRV_INCLUDE_DIR")
+    # ls_path(${SPIRV_INCLUDE_DIR})
     
-    select_library_configurations(GLSLANG)
-    select_library_configurations(OGLCOMPILER)
-    select_library_configurations(OSDEPENDENT)
-    select_library_configurations(SPIRV)
-    select_library_configurations(HLSL)
-    select_library_configurations(GENERICCODEGEN)
-    select_library_configurations(MACHINEINDEPENDENT)
-    select_library_configurations(SPVREMAPPER)
+    # select_library_configurations(GLSLANG)
+    # select_library_configurations(OGLCOMPILER)
+    # select_library_configurations(OSDEPENDENT)
+    # select_library_configurations(SPIRV)
+    # select_library_configurations(HLSL)
+    # select_library_configurations(GENERICCODEGEN)
+    # select_library_configurations(MACHINEINDEPENDENT)
+    # select_library_configurations(SPVREMAPPER)
 
-    find_package_handle_standard_args(
-      glslang
-      DEFAULT_MSG
-      GLSLANG_LIBRARY
-      OGLCOMPILER_LIBRARY
-      OSDEPENDENT_LIBRARY
-      SPIRV_TOOLS_OPT_LIBRARY
-      SPIRV_LIBRARY
-      HLSL_LIBRARY
-      SPVREMAPPER_LIBRARY
-      GLSLANG_INCLUDE_DIR
-      SPIRV_INCLUDE_DIR
-    )
+    # find_package_handle_standard_args(
+    #   glslang
+    #   DEFAULT_MSG
+    #   GLSLANG_LIBRARY
+    #   OGLCOMPILER_LIBRARY
+    #   OSDEPENDENT_LIBRARY
+    #   SPIRV_TOOLS_OPT_LIBRARY
+    #   SPIRV_LIBRARY
+    #   HLSL_LIBRARY
+    #   SPVREMAPPER_LIBRARY
+    #   GLSLANG_INCLUDE_DIR
+    #   SPIRV_INCLUDE_DIR
+    # )
 
-    find_package(Threads)
+    # find_package(Threads)
 
-    add_library(OGLCompiler STATIC IMPORTED)
-    set_property(TARGET OGLCompiler APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      OGLCompiler   
-        PROPERTIES
-          IMPORTED_LOCATION ${OGLCOMPILER_LIBRARY}
-    )
+    # add_library(OGLCompiler STATIC IMPORTED)
+    # set_property(TARGET OGLCompiler APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   OGLCompiler   
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${OGLCOMPILER_LIBRARY}
+    # )
 
-    target_link_libraries(OGLCompiler INTERFACE Threads::Threads)
+    # target_link_libraries(OGLCompiler INTERFACE Threads::Threads)
 
-    add_library(OSDependent STATIC IMPORTED)
-    set_property(TARGET OSDependent APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      OSDependent
-        PROPERTIES
-          IMPORTED_LOCATION ${OSDEPENDENT_LIBRARY}
-    )
+    # add_library(OSDependent STATIC IMPORTED)
+    # set_property(TARGET OSDependent APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   OSDependent
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${OSDEPENDENT_LIBRARY}
+    # )
 
-    target_link_libraries(OSDependent INTERFACE Threads::Threads)
+    # target_link_libraries(OSDependent INTERFACE Threads::Threads)
 
-    add_library(HLSL STATIC IMPORTED)
-    set_property(TARGET HLSL APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      HLSL
-        PROPERTIES
-          IMPORTED_LOCATION ${HLSL_LIBRARY}
-          INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include/glslang
-    )
+    # add_library(HLSL STATIC IMPORTED)
+    # set_property(TARGET HLSL APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   HLSL
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${HLSL_LIBRARY}
+    #       INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include/glslang
+    # )
 
-    add_library(GenericCodeGen STATIC IMPORTED)
-    set_property(TARGET GenericCodeGen APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      GenericCodeGen
-        PROPERTIES
-          IMPORTED_LOCATION ${GENERICCODEGEN_LIBRARY}
-          INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include/glslang
-    )
+    # add_library(GenericCodeGen STATIC IMPORTED)
+    # set_property(TARGET GenericCodeGen APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   GenericCodeGen
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${GENERICCODEGEN_LIBRARY}
+    #       INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include/glslang
+    # )
 
-    add_library(MachineIndependent STATIC IMPORTED)
-    set_property(TARGET MachineIndependent APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      MachineIndependent
-        PROPERTIES
-          IMPORTED_LOCATION ${MACHINEINDEPENDENT_LIBRARY}
-          INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include/glslang
-    )
+    # add_library(MachineIndependent STATIC IMPORTED)
+    # set_property(TARGET MachineIndependent APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   MachineIndependent
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${MACHINEINDEPENDENT_LIBRARY}
+    #       INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include/glslang
+    # )
     
-    target_link_libraries(MachineIndependent INTERFACE OGLCompiler OSDependent GenericCodeGen)
+    # target_link_libraries(MachineIndependent INTERFACE OGLCompiler OSDependent GenericCodeGen)
 
-    add_library(SPVRemapper STATIC IMPORTED)
-    set_property(TARGET SPVRemapper APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      SPVRemapper
-        PROPERTIES
-          IMPORTED_LOCATION ${SPVREMAPPER_LIBRARY}
-    )
+    # add_library(SPVRemapper STATIC IMPORTED)
+    # set_property(TARGET SPVRemapper APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   SPVRemapper
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${SPVREMAPPER_LIBRARY}
+    # )
 
-    add_library(glslang STATIC IMPORTED)
-    set_property(TARGET glslang APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      glslang
-        PROPERTIES
-          IMPORTED_LOCATION ${GLSLANG_LIBRARY}
-          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/glslang;${GLSLANG_INCLUDE_DIR}"
-    )
+    # add_library(glslang STATIC IMPORTED)
+    # set_property(TARGET glslang APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   glslang
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${GLSLANG_LIBRARY}
+    #       INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/glslang;${GLSLANG_INCLUDE_DIR}"
+    # )
 
-    target_link_directories(glslang 
-      INTERFACE ${CMAKE_INSTALL_PREFIX}/include
-      INTERFACE ${CMAKE_INSTALL_PREFIX}/include/glslang
-      INTERFACE ${GLSLANG_INCLUDE_DIR})
-    target_link_libraries(glslang INTERFACE HLSL OSDependent OGLCompiler GenericCodeGen MachineIndependent SPIRV-Tools SPIRV-Tools-opt)
+    # target_link_directories(glslang 
+    #   INTERFACE ${CMAKE_INSTALL_PREFIX}/include
+    #   INTERFACE ${CMAKE_INSTALL_PREFIX}/include/glslang
+    #   INTERFACE ${GLSLANG_INCLUDE_DIR})
+    # target_link_libraries(glslang INTERFACE HLSL OSDependent OGLCompiler GenericCodeGen MachineIndependent SPIRV-Tools SPIRV-Tools-opt)
     
-    add_library(SPIRV STATIC IMPORTED)
-    set_property(TARGET SPIRV APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      SPIRV
-        PROPERTIES
-          IMPORTED_LOCATION ${SPIRV_LIBRARY}
-          INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/glslang;${SPIRV_INCLUDE_DIR}"
-    )
+    # add_library(SPIRV STATIC IMPORTED)
+    # set_property(TARGET SPIRV APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   SPIRV
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${SPIRV_LIBRARY}
+    #       INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/include;${CMAKE_INSTALL_PREFIX}/include/glslang;${SPIRV_INCLUDE_DIR}"
+    # )
 
-    target_link_directories(SPIRV 
-      INTERFACE ${CMAKE_INSTALL_PREFIX}/include
-      INTERFACE ${CMAKE_INSTALL_PREFIX}/include/glslang
-      INTERFACE ${SPIRV_INCLUDE_DIR})
+    # target_link_directories(SPIRV 
+    #   INTERFACE ${CMAKE_INSTALL_PREFIX}/include
+    #   INTERFACE ${CMAKE_INSTALL_PREFIX}/include/glslang
+    #   INTERFACE ${SPIRV_INCLUDE_DIR})
 
-    target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools-opt)
+    # target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools-opt)
 
-    find_package_handle_standard_args(glslangValidator
-        "Cannot find glslangValidator, Shader won't be compiled offline"
-        GLSLANG_VALIDATOR_EXE
-    )
+    foreach(targets OGLCompiler OSDependent glslang glslang-default-resource-limits glslangValidator HLSL SPIRV spirv-remap SPVRemapper)
+      include("${CMAKE_CURRENT_LIST_DIR}/${targets}Targets.cmake" OPTIONAL)
+    endforeach()
+
+    # find_package_handle_standard_args(glslangValidator
+    #     "Cannot find glslangValidator, Shader won't be compiled offline"
+    #     GLSLANG_VALIDATOR_EXE
+    # )
     
-    add_executable(glslangValidator IMPORTED)
-    set_target_properties(glslangValidator PROPERTIES IMPORTED_LOCATION ${GLSLANG_VALIDATOR_EXE})
+    # add_executable(glslangValidator IMPORTED)
+    # set_target_properties(glslangValidator PROPERTIES IMPORTED_LOCATION ${GLSLANG_VALIDATOR_EXE})
 
     file(COPY "CHANGES" DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
