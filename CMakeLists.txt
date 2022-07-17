@@ -96,14 +96,16 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
       else()
         execute_process(COMMAND bash "-c" "ls ${path}")
       endif()
-
     endfunction(ls_path path)
 
     message(STATUS "======================== SHADER PATCH ========================")
 
+    find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h HINTS "${CMAKE_INSTALL_PREFIX}/include")
+    set(glslang_SOURCE_DIR "${glslang_SOURCE_DIR}/glslang" "${glslang_SOURCE_DIR}" CACHE STRING "" FORCE)
+
     set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
     set(SPIRV-Headers_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
-    set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
+    # set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
 
     message(STATUS "spirv-tools_SOURCE_DIR")
     ls_path(${spirv-tools_SOURCE_DIR})
@@ -332,16 +334,19 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # OSDependent
     # OGLCompiler
 
-    include_directories(${CMAKE_INSTALL_PREFIX}/include)
-    include_directories(${CMAKE_INSTALL_PREFIX}/include/glslang)
-    include_directories(${CMAKE_INSTALL_PREFIX}/include/spirv)
-    include_directories(${CMAKE_INSTALL_PREFIX}/include/spirv-tools)
-
-
   ]====])
 
-  set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt")
-  set_property(GLOBAL APPEND PROPERTY Glslang_cmake_extra -DSHADERC_ENABLE_SHARED_CRT:BOOL=ON)
+  file(WRITE ${CMAKE_BINARY_DIR}/shaderc_util_patch.cmake  [====[
+    if(SHADERC_ENABLE_INSTALL AND NOT BUILD_SHARED_LIBS)
+      install(TARGETS shaderc_util
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    endif(SHADERC_ENABLE_INSTALL)
+  ]====])
+
+  set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i -e \'51a include(${CMAKE_BINARY_DIR}/shaderc_util_patch.cmake)\' libshaderc_util/CMakeLists.txt")
+  set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra -DSHADERC_GLSLANG_DIR=${CMAKE_CURRENT_LIST_DIR}/glslang -DSHADERC_SPIRV_TOOLS_DIR=${CMAKE_CURRENT_LIST_DIR}/spirv-tools)
 
 endif()
 
