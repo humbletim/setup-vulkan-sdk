@@ -102,9 +102,14 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/glslc/src/build-version.inc" [["shaderc v2021.1-dev unknown hash, 2021-06-21\n"]])
 
+    message("current source dir")
     ls_path("${CMAKE_CURRENT_SOURCE_DIR}")
+    message("current binary dir")
     ls_path("${CMAKE_CURRENT_BINARY_DIR}")
+    message("install prefix")
     ls_path("${CMAKE_INSTALL_PREFIX}")
+    message("current list dir")
+    ls_path("${CMAKE_CURRENT_LIST_DIR}")
     
     # find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h HINTS "${CMAKE_INSTALL_PREFIX}/include")
     # message(STATUS ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
