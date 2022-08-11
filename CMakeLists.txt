@@ -102,15 +102,6 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/glslc/src/build-version.inc" [["shaderc v2021.1-dev unknown hash, 2021-06-21\n"]])
 
-    # message("current source dir")
-    # ls_path("${CMAKE_CURRENT_SOURCE_DIR}")
-    # message("current binary dir")
-    # ls_path("${CMAKE_CURRENT_BINARY_DIR}")
-    # message("install prefix")
-    # ls_path("${CMAKE_INSTALL_PREFIX}")
-    # message("current list dir")
-    # ls_path("${CMAKE_CURRENT_LIST_DIR}")
-
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/glslang)
     file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/third_party/glslang/CMakeLists.txt  [===[
 
@@ -516,19 +507,19 @@ set_target_properties(
 
     # file(COPY "CHANGES" DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
-    # if(MSVC)
-    #   set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
-    # endif()
+    if(MSVC)
+      set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
+    endif()
 
     # message(STATUS "glslang/Include")
     # ls_path(${CMAKE_INSTALL_PREFIX}/include/glslang/Include)
 
-    # if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    #   message(STATUS "config debug strqual")
-    #   # set(CMAKE_DEBUG_POSTFIX d)
-    #   set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    #   set(CMAKE_SHARED_LIBRARY_SUFFIX "d${CMAKE_SHARED_LIBRARY_SUFFIX}")
-    # endif()
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+      message(STATUS "config debug strqual")
+      set(CMAKE_DEBUG_POSTFIX "")
+      set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
+      set(CMAKE_SHARED_LIBRARY_SUFFIX "d${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    endif()
 
     # SPIRV-Tools-static
     # MachineIndependent
