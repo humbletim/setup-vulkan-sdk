@@ -90,6 +90,10 @@ endif()
 if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
 
+    set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
+    set(SPIRV-Headers_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
+    set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
+
     function(ls_path path)
       if(WIN32)
         execute_process(COMMAND powershell "-c" "ls ${path}")
@@ -143,7 +147,6 @@ find_package_handle_standard_args(
       GLSLANG_LIBRARY
       OGLCOMPILER_LIBRARY
       OSDEPENDENT_LIBRARY
-      SPIRV_TOOLS_OPT_LIBRARY
       SPIRV_LIBRARY
       HLSL_LIBRARY
       GLSLANG_INCLUDE_DIR
@@ -275,7 +278,7 @@ SPIRV-Tools
 
 set_target_properties(SPIRV-Tools PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR} )
 
-add_library(SPIRV-Tools-opt UNKNOWN IMPORTED GLOBAL)
+add_library(SPIRV-Tools-opt STATIC IMPORTED GLOBAL)
 set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
 set_target_properties(
     SPIRV-Tools-opt
