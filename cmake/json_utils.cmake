@@ -90,4 +90,3 @@ function(get_component_props _comp)
     set(${_arg} "${_value}" PARENT_SCOPE)
   endforeach()
 endfunction()
-
