@@ -101,72 +101,76 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     message(STATUS "======================== SHADERC PATCH ========================")
 
     file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/glslc/src/build-version.inc" [["shaderc v2021.1-dev unknown hash, 2021-06-21\n"]])
+
+    ls_path("${CMAKE_CURRENT_SOURCE_DIR}")
+    ls_path("${CMAKE_CURRENT_BINARY_DIR}")
+    ls_path("${CMAKE_INSTALL_PREFIX}")
     
-    find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h HINTS "${CMAKE_INSTALL_PREFIX}/include")
-    message(STATUS ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    # ls_path(${glslang_SOURCE_DIR})
-    # set(glslang_SOURCE_DIR "${glslang_SOURCE_DIR}/glslang" "${glslang_SOURCE_DIR}" CACHE STRING "" FORCE)
+    # find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h HINTS "${CMAKE_INSTALL_PREFIX}/include")
+    # message(STATUS ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    # # ls_path(${glslang_SOURCE_DIR})
+    # # set(glslang_SOURCE_DIR "${glslang_SOURCE_DIR}/glslang" "${glslang_SOURCE_DIR}" CACHE STRING "" FORCE)
 
-    set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
-    set(SPIRV-Headers_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
-    set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
+    # set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
+    # set(SPIRV-Headers_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
+    # set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
 
-    # set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_LIST_DIR}/glslang" CACHE STRING "" FORCE)
-    # set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_LIST_DIR}/spirv-tools" CACHE STRING "" FORCE)
+    # # set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_LIST_DIR}/glslang" CACHE STRING "" FORCE)
+    # # set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_LIST_DIR}/spirv-tools" CACHE STRING "" FORCE)
 
-    message(STATUS "spirv-tools_SOURCE_DIR")
-    ls_path(${spirv-tools_SOURCE_DIR})
+    # message(STATUS "spirv-tools_SOURCE_DIR")
+    # ls_path(${spirv-tools_SOURCE_DIR})
 
-    include(FindPackageHandleStandardArgs)
-    include(SelectLibraryConfigurations)
+    # include(FindPackageHandleStandardArgs)
+    # include(SelectLibraryConfigurations)
 
-    set(CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
+    # set(CMAKE_DEBUG_POSTFIX "" CACHE STRING "" FORCE)
 
-    find_library(SPIRV_TOOLS_LIBRARY_DEBUG NAMES SPIRV-Toolsd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
-    find_library(SPIRV_TOOLS_LIBRARY_RELEASE NAMES SPIRV-Tools HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    find_path(SPIRV_TOOLS_INCLUDE_DIR NAMES spirv-tools/libspirv.h HINTS ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/include/spirv-tools PATH_SUFFIXES include)
-    find_library(SPIRV_TOOLS_OPT_LIBRARY_DEBUG NAMES SPIRV-Tools-optd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
-    find_library(SPIRV_TOOLS_OPT_LIBRARY_RELEASE NAMES SPIRV-Tools-opt HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_library(SPIRV_TOOLS_LIBRARY_DEBUG NAMES SPIRV-Toolsd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
+    # find_library(SPIRV_TOOLS_LIBRARY_RELEASE NAMES SPIRV-Tools HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+    # find_path(SPIRV_TOOLS_INCLUDE_DIR NAMES spirv-tools/libspirv.h HINTS ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/include/spirv-tools PATH_SUFFIXES include)
+    # find_library(SPIRV_TOOLS_OPT_LIBRARY_DEBUG NAMES SPIRV-Tools-optd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
+    # find_library(SPIRV_TOOLS_OPT_LIBRARY_RELEASE NAMES SPIRV-Tools-opt HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
 
-    message(STATUS "SPIRV_TOOLS_INCLUDE_DIR")
-    ls_path(${SPIRV_TOOLS_INCLUDE_DIR})
+    # message(STATUS "SPIRV_TOOLS_INCLUDE_DIR")
+    # ls_path(${SPIRV_TOOLS_INCLUDE_DIR})
 
-    message(STATUS "CMAKE_INSTALL_PREFIX/include/")
-    ls_path(${CMAKE_INSTALL_PREFIX}/include/)
+    # message(STATUS "CMAKE_INSTALL_PREFIX/include/")
+    # ls_path(${CMAKE_INSTALL_PREFIX}/include/)
 
-    message(STATUS "CMAKE_INSTALL_PREFIX/include/spirv-tools")
-    ls_path(${CMAKE_INSTALL_PREFIX}/include/spirv-tools)
+    # message(STATUS "CMAKE_INSTALL_PREFIX/include/spirv-tools")
+    # ls_path(${CMAKE_INSTALL_PREFIX}/include/spirv-tools)
     
-    select_library_configurations(SPIRV_TOOLS)
-    select_library_configurations(SPIRV_TOOLS_OPT)
+    # select_library_configurations(SPIRV_TOOLS)
+    # select_library_configurations(SPIRV_TOOLS_OPT)
 
-    find_package_handle_standard_args(
-      SPIRV-Tools
-      DEFAULT_MSG
-      SPIRV_TOOLS_LIBRARY
-      SPIRV_TOOLS_OPT_LIBRARY
-      SPIRV_TOOLS_INCLUDE_DIR
-    )
+    # find_package_handle_standard_args(
+    #   SPIRV-Tools
+    #   DEFAULT_MSG
+    #   SPIRV_TOOLS_LIBRARY
+    #   SPIRV_TOOLS_OPT_LIBRARY
+    #   SPIRV_TOOLS_INCLUDE_DIR
+    # )
 
-    add_library(SPIRV-Tools STATIC IMPORTED GLOBAL)
-    set_property(TARGET SPIRV-Tools APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      SPIRV-Tools
-        PROPERTIES
-          IMPORTED_LOCATION ${SPIRV_TOOLS_LIBRARY}
-          INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR} 
-    )
+    # add_library(SPIRV-Tools STATIC IMPORTED GLOBAL)
+    # set_property(TARGET SPIRV-Tools APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   SPIRV-Tools
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${SPIRV_TOOLS_LIBRARY}
+    #       INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR} 
+    # )
 
-    set_target_properties(SPIRV-Tools PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR} )
+    # set_target_properties(SPIRV-Tools PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR} )
 
-    add_library(SPIRV-Tools-opt UNKNOWN IMPORTED)
-    set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    set_target_properties(
-      SPIRV-Tools-opt
-        PROPERTIES
-          IMPORTED_LOCATION ${SPIRV_TOOLS_OPT_LIBRARY}
-          INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR}
-    )
+    # add_library(SPIRV-Tools-opt UNKNOWN IMPORTED)
+    # set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
+    # set_target_properties(
+    #   SPIRV-Tools-opt
+    #     PROPERTIES
+    #       IMPORTED_LOCATION ${SPIRV_TOOLS_OPT_LIBRARY}
+    #       INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR}
+    # )
 
     # set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_LINK_LIBRARIES SPIRV-Tools)
 
@@ -177,7 +181,6 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # find_library(MACHINEINDEPENDENT_LIBRARY_RELEASE NAMES MachineIndependent HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
     # find_library(HLSL_LIBRARY_RELEASE NAMES HLSL HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES  lib)
     # find_library(SPIRV_LIBRARY_RELEASE NAMES SPIRV HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
-    # find_library(SPVREMAPPER_LIBRARY_RELEASE NAMES SPVRemapper HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
     # find_library(GLSLANG_LIBRARY_DEBUG NAMES glslangd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     # find_library(OGLCOMPILER_LIBRARY_DEBUG NAMES OGLCompilerd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     # find_library(OSDEPENDENT_LIBRARY_DEBUG NAMES OSDependentd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
@@ -185,7 +188,6 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # find_library(GENERICCODEGEN_LIBRARY_DEBUG NAMES GenericCodeGend HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     # find_library(MACHINEINDEPENDENT_LIBRARY_DEBUG NAMES MachineIndependentd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     # find_library(HLSL_LIBRARY_DEBUG NAMES HLSLd PATH_SUFFIXES HINTS ${CMAKE_INSTALL_PREFIX} DEBUG/lib)
-    # find_library(SPVREMAPPER_LIBRARY_DEBUG NAMES SPVRemapperd HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES DEBUG/lib)
     # find_path(GLSLANG_INCLUDE_DIR NAMES glslang/Public/ShaderLang.h HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
     # find_path(SPIRV_INCLUDE_DIR NAMES SPIRV/spirv.hpp HINTS ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}/include/glslang PATH_SUFFIXES include)
     find_program(GLSLANG_VALIDATOR_EXE NAMES glslangValidator HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES bin)
@@ -203,7 +205,6 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # select_library_configurations(HLSL)
     # select_library_configurations(GENERICCODEGEN)
     # select_library_configurations(MACHINEINDEPENDENT)
-    # select_library_configurations(SPVREMAPPER)
 
     # find_package_handle_standard_args(
     #   glslang
@@ -270,14 +271,6 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     
     # target_link_libraries(MachineIndependent INTERFACE OGLCompiler OSDependent GenericCodeGen)
 
-    # add_library(SPVRemapper STATIC IMPORTED)
-    # set_property(TARGET SPVRemapper APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
-    # set_target_properties(
-    #   SPVRemapper
-    #     PROPERTIES
-    #       IMPORTED_LOCATION ${SPVREMAPPER_LIBRARY}
-    # )
-
     # add_library(glslang STATIC IMPORTED)
     # set_property(TARGET glslang APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<$<CONFIG:DEBUG>:Debug>$<$<CONFIG:RELEASE>:Release>")
     # set_target_properties(
@@ -309,20 +302,20 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     # target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools-opt)
 
-    include(CMakeFindDependencyMacro)
+    # include(CMakeFindDependencyMacro)
 
-    find_dependency(Threads)
+    # find_dependency(Threads)
 
-    foreach(targets OGLCompiler OSDependent glslang glslang-default-resource-limits glslangValidator HLSL SPIRV spirv-remap SPVRemapper)
-      include("${CMAKE_CURRENT_LIST_DIR}/${targets}Targets.cmake" OPTIONAL)
-    endforeach()
+    # foreach(targets OGLCompiler OSDependent glslang glslang-default-resource-limits glslangValidator HLSL SPIRV)
+    #   include("${CMAKE_CURRENT_LIST_DIR}/${targets}Targets.cmake" OPTIONAL)
+    # endforeach()
 
-    set_property(TARGET glslang PROPERTY IMPORTED_GLOBAL TRUE)
-    set_property(TARGET OSDependent PROPERTY IMPORTED_GLOBAL TRUE)
-    set_property(TARGET OGLCompiler PROPERTY IMPORTED_GLOBAL TRUE)
-    set_property(TARGET HLSL PROPERTY IMPORTED_GLOBAL TRUE)
-    set_property(TARGET SPIRV PROPERTY IMPORTED_GLOBAL TRUE)
-    set_property(TARGET MachineIndependent PROPERTY IMPORTED_GLOBAL TRUE)
+    # set_property(TARGET glslang PROPERTY IMPORTED_GLOBAL TRUE)
+    # set_property(TARGET OSDependent PROPERTY IMPORTED_GLOBAL TRUE)
+    # set_property(TARGET OGLCompiler PROPERTY IMPORTED_GLOBAL TRUE)
+    # set_property(TARGET HLSL PROPERTY IMPORTED_GLOBAL TRUE)
+    # set_property(TARGET SPIRV PROPERTY IMPORTED_GLOBAL TRUE)
+    # set_property(TARGET MachineIndependent PROPERTY IMPORTED_GLOBAL TRUE)
 
     # find_package_handle_standard_args(glslangValidator
     #     "Cannot find glslangValidator, Shader won't be compiled offline"
@@ -332,21 +325,21 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # add_executable(glslangValidator IMPORTED)
     # set_target_properties(glslangValidator PROPERTIES IMPORTED_LOCATION ${GLSLANG_VALIDATOR_EXE})
 
-    file(COPY "CHANGES" DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+    # file(COPY "CHANGES" DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
-    if(MSVC)
-      set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
-    endif()
+    # if(MSVC)
+    #   set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
+    # endif()
 
-    message(STATUS "glslang/Include")
-    ls_path(${CMAKE_INSTALL_PREFIX}/include/glslang/Include)
+    # message(STATUS "glslang/Include")
+    # ls_path(${CMAKE_INSTALL_PREFIX}/include/glslang/Include)
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      message(STATUS "config debug strqual")
-      # set(CMAKE_DEBUG_POSTFIX d)
-      set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
-      set(CMAKE_SHARED_LIBRARY_SUFFIX "d${CMAKE_SHARED_LIBRARY_SUFFIX}")
-    endif()
+    # if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    #   message(STATUS "config debug strqual")
+    #   # set(CMAKE_DEBUG_POSTFIX d)
+    #   set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    #   set(CMAKE_SHARED_LIBRARY_SUFFIX "d${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    # endif()
 
     # SPIRV-Tools-static
     # MachineIndependent
