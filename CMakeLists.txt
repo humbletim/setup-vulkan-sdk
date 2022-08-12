@@ -287,6 +287,8 @@ set_target_properties(
         INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR}
 )
 
+target_link_libraries(SPIRV-Tools-opt SPIRV-Tools)
+
 ]===])
 
     # include(CMakeFindDependencyMacro)
