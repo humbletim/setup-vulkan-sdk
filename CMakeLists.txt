@@ -239,6 +239,10 @@ target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools-opt)
 add_executable(glslangValidator IMPORTED GLOBAL)
 set_target_properties(glslangValidator PROPERTIES IMPORTED_LOCATION ${GLSLANG_VALIDATOR_EXE})
 
+find_path(glslang_SOURCE_DIR NAMES glslang/Public/ShaderLang.h HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
+# find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h)
+set(glslang_SOURCE_DIR "${glslang_SOURCE_DIR}/glslang" "${glslang_SOURCE_DIR}" CACHE STRING "" FORCE)
+
 ]===])
 
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/spirv-tools)
