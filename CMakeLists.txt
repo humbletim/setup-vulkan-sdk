@@ -287,7 +287,7 @@ set_target_properties(
         INCLUDE_DIRECTORIES ${SPIRV_TOOLS_INCLUDE_DIR}
 )
 
-target_link_libraries(SPIRV-Tools-opt SPIRV-Tools)
+target_link_libraries(SPIRV-Tools-opt INTERFACE SPIRV-Tools)
 
 ]===])
 
