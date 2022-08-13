@@ -88,6 +88,19 @@ else()
 endif()
 
 if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
+
+  file(WRITE ${CMAKE_MODULE_PATH}/glslang-config.cmake [===[
+
+  include(CMakeFindDependencyMacro)
+
+  find_dependency(Threads)
+  
+  foreach(targets OGLCompiler OSDependent glslang glslang-default-resource-limits glslangValidator HLSL SPIRV spirv-remap SPVRemapper)
+      include("${CMAKE_CURRENT_LIST_DIR}/${targets}Targets.cmake" OPTIONAL)
+  endforeach()
+
+  ]===])
+  
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
 
     set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
@@ -239,14 +252,14 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 # add_executable(glslangValidator IMPORTED GLOBAL)
 # set_target_properties(glslangValidator PROPERTIES IMPORTED_LOCATION ${GLSLANG_VALIDATOR_EXE})
 
-find_package(glslang CONFIG REQUIRED)
+# find_package(glslang CONFIG REQUIRED)
 
-set_property(TARGET glslang PROPERTY IMPORTED_GLOBAL TRUE)
-set_property(TARGET OSDependent PROPERTY IMPORTED_GLOBAL TRUE)
-set_property(TARGET OGLCompiler PROPERTY IMPORTED_GLOBAL TRUE)
-set_property(TARGET HLSL PROPERTY IMPORTED_GLOBAL TRUE)
-set_property(TARGET SPIRV PROPERTY IMPORTED_GLOBAL TRUE)
-set_property(TARGET MachineIndependent PROPERTY IMPORTED_GLOBAL TRUE)
+# set_property(TARGET glslang PROPERTY IMPORTED_GLOBAL TRUE)
+# set_property(TARGET OSDependent PROPERTY IMPORTED_GLOBAL TRUE)
+# set_property(TARGET OGLCompiler PROPERTY IMPORTED_GLOBAL TRUE)
+# set_property(TARGET HLSL PROPERTY IMPORTED_GLOBAL TRUE)
+# set_property(TARGET SPIRV PROPERTY IMPORTED_GLOBAL TRUE)
+# set_property(TARGET MachineIndependent PROPERTY IMPORTED_GLOBAL TRUE)
 
 find_path(glslang_SOURCE_DIR NAMES glslang/Public/ShaderLang.h HINTS ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
 # find_path(glslang_SOURCE_DIR glslang/Public/ShaderLang.h)
