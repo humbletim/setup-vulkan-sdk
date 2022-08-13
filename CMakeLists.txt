@@ -91,16 +91,27 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
   file(WRITE ${CMAKE_MODULE_PATH}/glslang-config.cmake [===[
 
+  function(ls_path path)
+      if(WIN32)
+        execute_process(COMMAND powershell "-c" "ls ${path}")
+      else()
+        execute_process(COMMAND bash "-c" "ls ${path}")
+      endif()
+  endfunction(ls_path path)
+
   include(CMakeFindDependencyMacro)
 
   find_dependency(Threads)
+
+  ls_path(${CMAKE_CURRENT_LIST_DIR})
+  ls_path(${CMAKE_INSTALL_PREFIX})
   
   foreach(targets OGLCompiler OSDependent glslang glslang-default-resource-limits glslangValidator HLSL SPIRV spirv-remap SPVRemapper)
       include("${CMAKE_CURRENT_LIST_DIR}/${targets}Targets.cmake" OPTIONAL)
   endforeach()
 
   ]===])
-  
+
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
 
     set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
