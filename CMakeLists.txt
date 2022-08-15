@@ -89,7 +89,9 @@ endif()
 
 if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
-  file(WRITE ${CMAKE_MODULE_PATH}/glslang-config.cmake [===[
+  set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}")
+
+  file(WRITE ${CMAKE_SOURCE_DIR}/glslang-config.cmake [===[
 
   function(ls_path path)
       if(WIN32)
@@ -110,7 +112,10 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
       include("${CMAKE_CURRENT_LIST_DIR}/${targets}Targets.cmake" OPTIONAL)
   endforeach()
 
+  message(STATUS "FIND GLSLANG IS PRESENT")
+
   ]===])
+  
 
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
 
