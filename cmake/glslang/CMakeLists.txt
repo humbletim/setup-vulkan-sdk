@@ -131,3 +131,11 @@ target_link_libraries(SPIRV INTERFACE MachineIndependent SPIRV-Tools SPIRV-Tools
 add_executable(glslangValidator IMPORTED GLOBAL)
 set_target_properties(glslangValidator PROPERTIES IMPORTED_LOCATION ${GLSLANG_VALIDATOR_EXE})
 
+
+    # include(CMakeFindDependencyMacro)
+
+    # find_dependency(Threads)
+
+    # foreach(targets OGLCompiler OSDependent glslang glslang-default-resource-limits glslangValidator HLSL SPIRV)
+    #   include("${CMAKE_CURRENT_LIST_DIR}/${targets}Targets.cmake" OPTIONAL)
+    # endforeach()
