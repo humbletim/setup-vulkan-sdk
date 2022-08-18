@@ -87,6 +87,14 @@ else()
   set_property(GLOBAL APPEND PROPERTY Glslang_cmake_extra -DBUILD_EXTERNAL:BOOL=OFF)
 endif()
 
+function(ls_path path)
+      if(WIN32)
+        execute_process(COMMAND powershell "-c" "ls ${path}")
+      else()
+        execute_process(COMMAND bash "-c" "ls ${path}")
+      endif()
+endfunction(ls_path path)
+
 if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
@@ -104,6 +112,12 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
         execute_process(COMMAND bash "-c" "ls ${path}")
       endif()
     endfunction(ls_path path)
+
+    ls_path(".")
+    ls_path("..")
+
+    ls_path(${CMAKE_CURRENT_BINARY_DIR})
+    ls_path(${CMAKE_CURRENT_SOURCE_DIR})
 
     message(STATUS "======================== SHADERC PATCH ========================")
 
@@ -123,6 +137,11 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
   # set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i -e \'52a include(${CMAKE_BINARY_DIR}/shaderc_util_patch.cmake)\' libshaderc_util/CMakeLists.txt && sed \'\'")
   set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i \'137,141d\' CMakeLists.txt && sed -i \'56d\' glslc/CMakeLists.txt")
   set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra -DSHADERC_GLSLANG_DIR=${CMAKE_CURRENT_LIST_DIR}/glslang -DSHADERC_SPIRV_TOOLS_DIR=${CMAKE_CURRENT_LIST_DIR}/spirv-tools)
+
+  ls_path(".")
+  ls_path("..")
+  ls_path("...")
+
 
 endif()
 
