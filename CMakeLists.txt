@@ -99,12 +99,6 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
 
-    # message(STATUS "glslang_SOURCE_DIR ${glslang_SOURCE_DIR}")
-    # message(STATUS "spirv-tools_SOURCE_DIR ${spirv-tools_SOURCE_DIR}")
-    # set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
-    # set(SPIRV-Headers_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
-    # set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
-
     function(ls_path path)
       if(WIN32)
         execute_process(COMMAND powershell "-c" "ls ${path}")
@@ -112,6 +106,17 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
         execute_process(COMMAND bash "-c" "ls ${path}")
       endif()
     endfunction(ls_path path)
+
+    ls_path(".")
+    ls_path("..")
+    ls_path("../..")
+
+
+    message(STATUS "glslang_SOURCE_DIR "../../SPIRV-Tools-prefix/spirv-tools")
+    message(STATUS "spirv-tools_SOURCE_DIR ${spirv-tools_SOURCE_DIR}")
+    # set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
+    # set(SPIRV-Headers_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
+    # set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
 
     ls_path(".")
     ls_path("..")
@@ -136,7 +141,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
   # set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i -e \'52a include(${CMAKE_BINARY_DIR}/shaderc_util_patch.cmake)\' libshaderc_util/CMakeLists.txt && sed \'\'")
   set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i \'137,141d\' CMakeLists.txt && sed -i \'56d\' glslc/CMakeLists.txt")
-  set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra -DSHADERC_GLSLANG_DIR=${CMAKE_CURRENT_LIST_DIR}/glslang -DSHADERC_SPIRV_TOOLS_DIR=${CMAKE_CURRENT_LIST_DIR}/spirv-tools)
+  # set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra -DSHADERC_GLSLANG_DIR=${CMAKE_CURRENT_LIST_DIR}/glslang -DSHADERC_SPIRV_TOOLS_DIR=${CMAKE_CURRENT_LIST_DIR}/spirv-tools)
 
   ls_path(".")
   ls_path("..")
