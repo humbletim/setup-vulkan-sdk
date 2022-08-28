@@ -107,8 +107,8 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     # set(glslang_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang")
     # set(spirv-tools_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
-    set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang")
-    set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
+    set(SHADERC_GLSLANG_DIR "../../../Glslang-prefix/src/Glslang")
+    set(SHADERC_SPIRV_TOOLS_DIR "../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
 
 
     function(ls_path path)
