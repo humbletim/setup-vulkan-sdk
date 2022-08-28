@@ -98,11 +98,15 @@ endfunction(ls_path path)
 if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
+  message(STATUS "======================== SHADERC PATCH ========================")
 # message(STATUS "glslang_SOURCE_DIR "../../SPIRV-Tools-preficx")
-    message(STATUS "spirv-tools_SOURCE_DIR ${spirv-tools_SOURCE_DIR}")
+    # message(STATUS "spirv-tools_SOURCE_DIR ${spirv-tools_SOURCE_DIR}")
     # set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
     # set(SPIRV-Headers_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
     # set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
+
+    set(glslang_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang")
+    set(spirv-tools_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
 
     function(ls_path path)
       if(WIN32)
@@ -116,11 +120,8 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     ls_path("..")
     ls_path("../..")
 
-
     ls_path(${CMAKE_CURRENT_BINARY_DIR})
     ls_path(${CMAKE_CURRENT_SOURCE_DIR})
-
-    message(STATUS "======================== SHADERC PATCH ========================")
 
     if(MSVC)
       set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
