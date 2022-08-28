@@ -110,10 +110,6 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     set(SHADERC_GLSLANG_DIR "../../../Glslang-prefix/src/Glslang" CACHE STRING "" FORCE)
     set(SHADERC_SPIRV_TOOLS_DIR "../../../SPIRV-Tools-prefix/src/SPIRV-Tools" CACHE STRING "" FORCE)
 
-    ls_path("../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
-    ls_path("../../../Glslang-prefix/src/Glslang")
-
-
     function(ls_path path)
       if(WIN32)
         execute_process(COMMAND powershell "-c" "ls ${path}")
@@ -121,6 +117,9 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
         execute_process(COMMAND bash "-c" "ls ${path}")
       endif()
     endfunction(ls_path path)
+
+    ls_path("../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
+    ls_path("../../../Glslang-prefix/src/Glslang")
 
     ls_path(".")
     ls_path("..")
