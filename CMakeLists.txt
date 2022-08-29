@@ -102,13 +102,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
   message(STATUS "======================== SHADERC PATCH ========================")
 # message(STATUS "glslang_SOURCE_DIR "../../SPIRV-Tools-preficx")
-    # message(STATUS "spirv-tools_SOURCE_DIR ${spirv-tools_SOURCE_DIR}")
-    # set(spirv-tools_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE FILEPATH "" FORCE)
     set(SPIRV-Headers_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Headers-prefix/src/SPIRV-Headers" CACHE FILEPATH "" FORCE)
-    # set(glslang_SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/include")
-
-    # set(glslang_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang")
-    # set(spirv-tools_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
     set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang" CACHE FILEPATH "" FORCE)
     set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools" CACHE FILEPATH "" FORCE)
 
@@ -120,20 +114,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
       endif()
     endfunction(ls_path path)
 
-    # execute_process(COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/utils/git-sync-deps")
-
-    # ls_path("${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang")
-    # ls_path("${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
-    # ls_path("${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Headers-prefix/src/SPIRV-Headers")
-
-    # ls_path(".")
-    # ls_path("..")
-    # ls_path("../..")
-
-    # ls_path(${CMAKE_CURRENT_BINARY_DIR})
-    # ls_path(${CMAKE_CURRENT_SOURCE_DIR})
-
-    execute_process(COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/utils/update_build_version.py" "${CMAKE_CURRENT_SOURCE_DIR}" "${SHADERC_SPIRV_TOOLS_DIR}" "${SHADERC_GLSLANG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/build-version.inc")
+    execute_process(COMMAND python3 "${CMAKE_CURRENT_SOURCE_DIR}/utils/update_build_version.py" "${CMAKE_CURRENT_SOURCE_DIR}" "${SHADERC_SPIRV_TOOLS_DIR}" "${SHADERC_GLSLANG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/build-version.inc")
 
     if(MSVC)
       set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
@@ -196,7 +177,7 @@ function(setup_component name parentName)
     )
 
     list(APPEND cmake_args ${cmake_extra})
-    if(NOT ("${name}" STREQUAL "Vulkan-Loader"))
+    if(NOT ("${name}" STREQUAL "Vulkan-Loader") AND MSVC)
       list(APPEND cmake_args -DCMAKE_DEBUG_POSTFIX=d)
     endif()
     message(STATUS "ExternalProject_Add ${name} ${ref} deps=[${deps}] cmake_extra=[${cmake_extra}]")
