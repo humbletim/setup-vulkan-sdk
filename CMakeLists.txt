@@ -133,7 +133,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # ls_path(${CMAKE_CURRENT_BINARY_DIR})
     # ls_path(${CMAKE_CURRENT_SOURCE_DIR})
 
-    execute_process(COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/utils/update_build_version.py" "${CMAKE_CURRENT_BINARY_DIR}/build-version.inc")
+    execute_process(COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/utils/update_build_version.py" "${CMAKE_CURRENT_SOURCE_DIR}" "${SHADERC_SPIRV_TOOLS_DIR}" "${SHADERC_GLSLANG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/build-version.inc")
 
     if(MSVC)
       set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
