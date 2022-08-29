@@ -20,15 +20,14 @@ inputs:
     description: 'specify whether to cache VULKAN_SDK/ results between runs (using github actions/cache)'
     default: false
     required: false
+  build-config:
+    description: 'CMake build type to be used in the build process'
+    default: 'Release'
+    required: false
 runs:
   using: "composite"
   steps: 
     - uses: humbletim/vsdevenv-shell@e87fcf2359929606ba32db358baef5ede4737aed
-
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3.9
-    #   with:
-    #     limit-access-to-actor: true
 
     - name: Resolve Vulkan SDK Configuration
       shell: bash
@@ -45,7 +44,10 @@ runs:
       run: |
         # dev prerequisites
         case `uname -s` in
-          Darwin) ;;
+          Darwin) 
+            brew install gnu-sed
+            echo "/usr/local/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
+          ;;
           Linux) 
             sudo apt-get -qq update 
             sudo apt-get -qq install -y libwayland-dev libxrandr-dev
@@ -72,7 +74,7 @@ runs:
       uses: actions/cache@v2
       with:
         path: VULKAN_SDK
-        key: ${{ runner.os }}-vulkan-cached-sdk-${{ hashFiles('_vulkan_build/cache-key.txt') }}
+        key: ${{ runner.os }}-vulkan-cached-sdk-${{inputs.build-config}}-${{ hashFiles('_vulkan_build/cache-key.txt') }}
 
     - name: Configure Vulkan SDK Build Prerequisites
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
@@ -100,7 +102,7 @@ runs:
           CXX=cl.exe
         fi
         cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
-          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_BUILD_TYPE=${{ inputs.build-config }} \
           -DVULKAN_SDK=${VULKAN_SDK} \
           -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
           -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
@@ -113,7 +115,7 @@ runs:
         # cmake build
         set -a
         . $PWD/_vulkan_build/env
-        cmake --build ${VULKAN_SDK_BUILD_DIR} --config Release
+        cmake --build ${VULKAN_SDK_BUILD_DIR} --config ${{ inputs.build-config }} --parallel 8
 
     - name: Install Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
@@ -122,7 +124,7 @@ runs:
         # cmake install
         set -a
         . $PWD/_vulkan_build/env
-        cmake --install ${VULKAN_SDK_BUILD_DIR}
+        cmake --install ${VULKAN_SDK_BUILD_DIR} --config ${{ inputs.build-config }}
 
     - name: Verify Vulkan SDK Installation
       shell: bash

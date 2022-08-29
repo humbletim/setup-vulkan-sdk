@@ -19,7 +19,7 @@ include(cmake/json_utils.cmake)
 
 project(VulkanSDKComponents)
 
-set(AVAILABLE_COMPONENTS "Vulkan-Headers Vulkan-Loader SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang")
+set(AVAILABLE_COMPONENTS "Vulkan-Headers Vulkan-Loader SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang shaderc")
 # TODO: Vulkan-ExtensionLayer Khronos-Tools LunarG-Tools DXC gfxreconstruct MoltenVK Vulkan-Docs Vulkan-ValidationLayers robin-hood-hashing shaderc
 
 macro(_assert varname)
@@ -49,6 +49,13 @@ set_property(GLOBAL APPEND PROPERTY SPIRV-Tools_deps_extra "SPIRV-Headers\;SPIRV
 # manually list robin-hood-hashing as Vulkan-ValidationLayers dependency
 set_property(GLOBAL APPEND PROPERTY Vulkan-ValidationLayers_deps_extra "robin-hood-hashing\;ROBIN_HOOD_HASHING_INSTALL_DIR")
 
+# setup shaderc depends
+set_property(GLOBAL APPEND PROPERTY shaderc_deps_extra "SPIRV-Tools\;spirv-tools_SOURCE_DIR;Glslang\;glslang_SOURCE_DIR")
+set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra -DSHADERC_SKIP_TESTS:BOOL=ON)
+set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra -DSHADERC_ENABLE_SHARED_CRT:BOOL=ON)
+set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra -DSHADERC_SKIP_COPYRIGHT_CHECK:BOOL=ON)
+set_property(GLOBAL APPEND PROPERTY shaderc_commit "1bbf43f210941ba69a2cd05cf3529063f1ff5bb9")
+
 # robin-hood-hashing is odd in Vulkan SDK config.json's -- but only the header is actually needed
 set_property(GLOBAL APPEND PROPERTY robin-hood-hashing_install_command 
   test -d ${VULKAN_SDK}/include/ || mkdir -v ${VULKAN_SDK}/include/ &&
@@ -58,26 +65,63 @@ set_property(GLOBAL APPEND PROPERTY robin-hood-hashing_install_command
 set_property(GLOBAL APPEND PROPERTY robin-hood-hashing_cmake_extra -DRH_STANDALONE_PROJECT:BOOL=OFF)
 
 # if SPIRV-Tools-opt is available as part of installed components enable Glslang to locate it
-if(VULKAN_SDK_COMPONENTS MATCHES "Glslang.*SPIRV-Tools|SPIRV-Tools.*Glslang")
+if(VULKAN_SDK_COMPONENTS MATCHES "Glslang.*SPIRV-Tools|SPIRV-Tools.*Glslang|shaderc")
   message("Glslang + SPIRV-Tools -- patching Glslang dependency on SPIRV-Tools-opt")
   set_property(GLOBAL APPEND PROPERTY Glslang_deps_extra "SPIRV-Tools\;spirv-tools_SOURCE_DIR")
   file(WRITE ${CMAKE_BINARY_DIR}/Glslang_SPIRV_patch.cmake [====[
-    add_library(SPIRV-Tools-opt INTERFACE)
-    set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_LINK_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/lib )
-    set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include )
-    install(TARGETS SPIRV-Tools-opt EXPORT SPIRV-Tools-opt)
-    install(EXPORT SPIRV-Tools-opt DESTINATION lib/cmake)
-    set(spirv_tools NOTFOUND)
-    set(spirv_tools_opt NOTFOUND)
-    find_library(spirv_tools SPIRV-Tools PATHS ${CMAKE_INSTALL_PREFIX}/lib REQUIRED NO_DEFAULT_PATH NO_PACKAGE_ROOT_PATH NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH NO_CMAKE_FIND_ROOT_PATH)
-    find_library(spirv_tools_opt SPIRV-Tools-opt PATHS ${CMAKE_INSTALL_PREFIX}/lib REQUIRED NO_DEFAULT_PATH NO_PACKAGE_ROOT_PATH NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH NO_CMAKE_FIND_ROOT_PATH)
-    set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${spirv_tools_opt} ${spirv_tools})
+      if(NOT TARGET SPIRV-Tools-opt)
+        add_library(SPIRV-Tools-opt INTERFACE)
+        set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_LINK_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/lib )
+        set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_INSTALL_PREFIX}/include )
+        install(TARGETS SPIRV-Tools-opt EXPORT SPIRV-Tools-opt)
+        install(EXPORT SPIRV-Tools-opt DESTINATION lib/cmake)
+        set(spirv_tools NOTFOUND)
+        set(spirv_tools_opt NOTFOUND)
+        find_library(spirv_tools NAMES SPIRV-Tools SPIRV-Toolsd PATHS ${CMAKE_INSTALL_PREFIX}/lib REQUIRED NO_DEFAULT_PATH NO_PACKAGE_ROOT_PATH NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH NO_CMAKE_FIND_ROOT_PATH)
+        find_library(spirv_tools_opt NAMES SPIRV-Tools-opt SPIRV-Tools-optd PATHS ${CMAKE_INSTALL_PREFIX}/lib REQUIRED NO_DEFAULT_PATH NO_PACKAGE_ROOT_PATH NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH NO_CMAKE_FIND_ROOT_PATH)
+        set_property(TARGET SPIRV-Tools-opt APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${spirv_tools_opt} ${spirv_tools})
+      endif()
   ]====])
-  set_property(GLOBAL APPEND PROPERTY Glslang_patch_command bash -c "echo 'include(${CMAKE_BINARY_DIR}/Glslang_SPIRV_patch.cmake)' | tee External/CMakeLists.txt")
+  set_property(GLOBAL APPEND PROPERTY Glslang_patch_command bash "-c" "sed -i \'44 a include(${CMAKE_BINARY_DIR}/Glslang_SPIRV_patch.cmake)\' CMakeLists.txt")
   set_property(GLOBAL APPEND PROPERTY Glslang_cmake_extra -DENABLE_OPT:BOOL=ON)
 else()
   # otherwise disable External completely 
   set_property(GLOBAL APPEND PROPERTY Glslang_cmake_extra -DBUILD_EXTERNAL:BOOL=OFF)
+endif()
+
+function(ls_path path)
+      if(WIN32)
+        execute_process(COMMAND powershell "-c" "ls ${path}")
+      else()
+        execute_process(COMMAND bash "-c" "ls ${path}")
+      endif()
+endfunction(ls_path path)
+
+if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
+
+  file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
+  message(STATUS "======================== SHADERC PATCH ========================")
+    set(SPIRV-Headers_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Headers-prefix/src/SPIRV-Headers" CACHE FILEPATH "" FORCE)
+    set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang" CACHE FILEPATH "" FORCE)
+    set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools" CACHE FILEPATH "" FORCE)
+
+    execute_process(COMMAND python3 "${CMAKE_CURRENT_SOURCE_DIR}/utils/update_build_version.py" "${CMAKE_CURRENT_SOURCE_DIR}" "${SHADERC_SPIRV_TOOLS_DIR}" "${SHADERC_GLSLANG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/build-version.inc")
+
+    if(MSVC)
+      set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
+    endif()
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND MSVC)
+      message(STATUS "config debug strqual")
+      set(CMAKE_DEBUG_POSTFIX "")
+      set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
+      set(CMAKE_SHARED_LIBRARY_SUFFIX "d${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    endif()
+
+  ]====])
+
+  set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i \'137,141d\' CMakeLists.txt && sed -i \'56d\' glslc/CMakeLists.txt")
+
 endif()
 
 function(setup_component_dependency key value parentName)
@@ -108,15 +152,19 @@ function(setup_component name parentName)
     # convert spaces to list (otherwise CMAKE_ARGS seems to force quotes if there are spaces in singular values)
     string(REPLACE " " ";" cmake_extra "${cmake_extra}")
     set(cmake_args
-        -Wno-dev
         -DCMAKE_INSTALL_MESSAGE=NEVER
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=$<CONFIG>
         -DCMAKE_INSTALL_PREFIX=${VULKAN_SDK}
         # -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
         # -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
         # -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON
     )
+
     list(APPEND cmake_args ${cmake_extra})
+    if(NOT ("${name}" STREQUAL "Vulkan-Loader") AND MSVC)
+      list(APPEND cmake_args -DCMAKE_DEBUG_POSTFIX=d) # Only want debug postfix on windows since debug libs are seperate. used in shaderc
+    endif()
+
     message(STATUS "ExternalProject_Add ${name} ${ref} deps=[${deps}] cmake_extra=[${cmake_extra}]")
     ExternalProject_Add("${name}"
       GIT_REPOSITORY "${url}"
@@ -128,6 +176,7 @@ function(setup_component name parentName)
       PATCH_COMMAND ${patch_command}
       INSTALL_COMMAND ${install_command}
     )
+
     set_property(GLOBAL APPEND PROPERTY VULKAN_COMPONENTS_PROCESSED ${name})
 endfunction()
 
@@ -153,6 +202,8 @@ foreach(name ${VULKAN_SDK_COMPONENTS})
   endif()
   setup_component(${name} "${name}")
 endforeach()
+
+
 
 message("===================================================================")
 message("VULKAN_SDK_COMPONENTS: ${VULKAN_SDK_COMPONENTS}")
