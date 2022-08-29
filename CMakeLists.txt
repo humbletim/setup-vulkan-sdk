@@ -101,18 +101,9 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
   file(WRITE ${CMAKE_BINARY_DIR}/shaderc_patch.cmake  [====[
   message(STATUS "======================== SHADERC PATCH ========================")
-# message(STATUS "glslang_SOURCE_DIR "../../SPIRV-Tools-preficx")
     set(SPIRV-Headers_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Headers-prefix/src/SPIRV-Headers" CACHE FILEPATH "" FORCE)
     set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang" CACHE FILEPATH "" FORCE)
     set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools" CACHE FILEPATH "" FORCE)
-
-    function(ls_path path)
-      if(WIN32)
-        execute_process(COMMAND powershell "-c" "ls ${path}")
-      else()
-        execute_process(COMMAND bash "-c" "ls ${path}")
-      endif()
-    endfunction(ls_path path)
 
     execute_process(COMMAND python3 "${CMAKE_CURRENT_SOURCE_DIR}/utils/update_build_version.py" "${CMAKE_CURRENT_SOURCE_DIR}" "${SHADERC_SPIRV_TOOLS_DIR}" "${SHADERC_GLSLANG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/build-version.inc")
 
@@ -129,14 +120,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
   ]====])
 
-  # set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i -e \'52a include(${CMAKE_BINARY_DIR}/shaderc_util_patch.cmake)\' libshaderc_util/CMakeLists.txt && sed \'\'")
   set_property(GLOBAL APPEND PROPERTY shaderc_patch_command bash "-c" "sed -i -e \'17a include(${CMAKE_BINARY_DIR}/shaderc_patch.cmake)\' CMakeLists.txt && sed -i \'137,141d\' CMakeLists.txt && sed -i \'56d\' glslc/CMakeLists.txt")
-  # set_property(GLOBAL APPEND PROPERTY shaderc_cmake_extra -DSHADERC_GLSLANG_DIR=${CMAKE_CURRENT_LIST_DIR}/glslang -DSHADERC_SPIRV_TOOLS_DIR=${CMAKE_CURRENT_LIST_DIR}/spirv-tools)
-
-  ls_path(".")
-  ls_path("..")
-  ls_path("...")
-
 
 endif()
 
@@ -178,8 +162,9 @@ function(setup_component name parentName)
 
     list(APPEND cmake_args ${cmake_extra})
     if(NOT ("${name}" STREQUAL "Vulkan-Loader") AND MSVC)
-      list(APPEND cmake_args -DCMAKE_DEBUG_POSTFIX=d)
+      list(APPEND cmake_args -DCMAKE_DEBUG_POSTFIX=d) # Only want debug postfix on windows since debug libs are seperate. use in shaderc
     endif()
+
     message(STATUS "ExternalProject_Add ${name} ${ref} deps=[${deps}] cmake_extra=[${cmake_extra}]")
     ExternalProject_Add("${name}"
       GIT_REPOSITORY "${url}"
