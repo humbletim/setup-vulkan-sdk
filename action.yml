@@ -29,11 +29,6 @@ runs:
   steps: 
     - uses: humbletim/vsdevenv-shell@e87fcf2359929606ba32db358baef5ede4737aed
 
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3.9
-    #   with:
-    #     limit-access-to-actor: true
-
     - name: Resolve Vulkan SDK Configuration
       shell: bash
       run: |
@@ -156,5 +151,5 @@ runs:
           echo VULKAN_SDK_VERSION=${VULKAN_SDK_VERSION}
         ) | tee -a $GITHUB_ENV
         echo ${VULKAN_SDK}/bin | tee -a $GITHUB_PATH
-        # rm -rf $PWD/_vulkan_build
+        rm -rf $PWD/_vulkan_build
         du -hs ${VULKAN_SDK}
