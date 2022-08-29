@@ -162,7 +162,7 @@ function(setup_component name parentName)
 
     list(APPEND cmake_args ${cmake_extra})
     if(NOT ("${name}" STREQUAL "Vulkan-Loader") AND MSVC)
-      list(APPEND cmake_args -DCMAKE_DEBUG_POSTFIX=d) # Only want debug postfix on windows since debug libs are seperate. use in shaderc
+      list(APPEND cmake_args -DCMAKE_DEBUG_POSTFIX=d) # Only want debug postfix on windows since debug libs are seperate. used in shaderc
     endif()
 
     message(STATUS "ExternalProject_Add ${name} ${ref} deps=[${deps}] cmake_extra=[${cmake_extra}]")
