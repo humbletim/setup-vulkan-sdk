@@ -107,8 +107,8 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     # set(glslang_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang")
     # set(spirv-tools_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
-    set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../Glslang-prefix/src/Glslang" CACHE FILEPATH "" FORCE)
-    set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools" CACHE FILEPATH "" FORCE)
+    set(SHADERC_GLSLANG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang" CACHE FILEPATH "" FORCE)
+    set(SHADERC_SPIRV_TOOLS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools" CACHE FILEPATH "" FORCE)
 
     function(ls_path path)
       if(WIN32)
@@ -118,15 +118,15 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
       endif()
     endfunction(ls_path path)
 
-    ls_path("${CMAKE_CURRENT_LIST_DIR}/../../../Glslang-prefix/src/Glslang")
-    ls_path("${CMAKE_CURRENT_LIST_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
+    # ls_path("${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang")
+    # ls_path("${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
 
-    ls_path(".")
-    ls_path("..")
-    ls_path("../..")
+    # ls_path(".")
+    # ls_path("..")
+    # ls_path("../..")
 
-    ls_path(${CMAKE_CURRENT_BINARY_DIR})
-    ls_path(${CMAKE_CURRENT_SOURCE_DIR})
+    # ls_path(${CMAKE_CURRENT_BINARY_DIR})
+    # ls_path(${CMAKE_CURRENT_SOURCE_DIR})
 
     if(MSVC)
       set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
