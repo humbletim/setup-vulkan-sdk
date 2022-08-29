@@ -133,11 +133,13 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
     # ls_path(${CMAKE_CURRENT_BINARY_DIR})
     # ls_path(${CMAKE_CURRENT_SOURCE_DIR})
 
+    execute_process(COMMAND python "./utils/update_build_version.py" "${CMAKE_CURRENT_BINARY_DIR}/build-version.inc")
+
     if(MSVC)
       set(SHADERC_ENABLE_SHARED_CRT ON CACHE BOOL "" FORCE)
     endif()
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND MSVC)
       message(STATUS "config debug strqual")
       set(CMAKE_DEBUG_POSTFIX "")
       set(CMAKE_STATIC_LIBRARY_SUFFIX "d${CMAKE_STATIC_LIBRARY_SUFFIX}")
