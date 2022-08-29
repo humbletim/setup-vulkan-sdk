@@ -120,6 +120,7 @@ if(VULKAN_SDK_COMPONENTS MATCHES "shaderc")
 
     ls_path("${CMAKE_CURRENT_SOURCE_DIR}/../../../Glslang-prefix/src/Glslang")
     ls_path("${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Tools-prefix/src/SPIRV-Tools")
+    ls_path("${CMAKE_CURRENT_SOURCE_DIR}/../../../SPIRV-Headers-prefix/src/SPIRV-Headers")
 
     ls_path(".")
     ls_path("..")
