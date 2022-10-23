@@ -24,13 +24,15 @@ _note: if new to GitHub Actions please see GitHub Help Documentation [Quickstart
 SDK version numbers are resolved into corresponding Khronos repos and commit points using the official LunarG [SDK web API](https://vulkan.lunarg.com/content/view/latest-sdk-version-api).
 
 As of now the following SDK release numbers are known to be usable across all three primary platforms (linux/mac/windows):
-- 1.2.162.0
-- 1.2.162.1
-- 1.2.170.0
-- 1.2.189.0
-- 1.2.198.1
-- 1.3.204.1
-- 1.3.224.1
+ - 1.2.162.0
+ - 1.2.162.1
+ - 1.2.170.0
+ - 1.2.189.0
+ - 1.2.198.1
+ - 1.3.204.1
+ - 1.3.211.0
+-  1.3.216.0
+-  1.3.224.1
 
 It is also possible to specify `latest` and the action will attempt to resolve automatically.
 
@@ -44,7 +46,7 @@ However, depending on your project's needs, it might make more sense to use unat
 
 ## Action Parameters
 
-- **`vulkan-query-version`**: valid SDK release number (eg: `1.2.161.1` or `latest`). *[required]*
+- **`vulkan-query-version`**: valid SDK release number (eg: `1.2.162.1` or `latest`). *[required]*
 - **`vulkan-config-file`**: project-local config.json file path. *[optional; default: '']*
   - note: config.json files already contain versioning info, so when specified vulkan-query-version will be ignored
 - **`vulkan-use-cache`**: if `true` the VULKAN_SDK folder is cached and restored across builds. *[optional; default=false]*
