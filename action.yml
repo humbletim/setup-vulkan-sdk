@@ -105,7 +105,7 @@ runs:
           -DVULKAN_SDK=${VULKAN_SDK} \
           -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
           -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
-        || { cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }
+        || { echo "cmake configure failed" 2>& ; cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'

@@ -13,7 +13,7 @@ remote_url_used=
 function lunarg_fetch_sdk_config() {
   local platform=$1 query_version=$2
   remote_url_used=https://vulkan.lunarg.com/sdk/config/$query_version/$platform/config.json
-  curl -sL $remote_url_used || { echo "error retrieving $remote_url_used" >&2 ; exit 1 ; }
+  curl -sL $remote_url_used || { echo "error retrieving $remote_url_used" >&2 ; return 1 ; }
 }
 
 function resolve_vulkan_sdk_environment() {
@@ -38,9 +38,9 @@ function resolve_vulkan_sdk_environment() {
   VULKAN_SDK=$base_dir/VULKAN_SDK
   test -d $VULKAN_SDK || mkdir -v $VULKAN_SDK
 
-  [[ -n "$config_file" || -n "$query_version" ]] || {
+  if [[ -z "$config_file" && -z "$query_version" ]] ; then
     echo "either config_file or query_version must be specified" >&2 
-    exit 9
+    return 9
   }
   if [[ -z "$config_file" ]] ; then
     test -n "$query_version"
@@ -48,12 +48,13 @@ function resolve_vulkan_sdk_environment() {
     lunarg_fetch_sdk_config $platform $query_version > $config_file
   fi
 
-  test -s $config_file || { echo "!config_file" >&2 ; exit 3 ; }
+  if [[ -s "$config_file" ]] ; then echo "!config_file" >&2 ; return 3 ; done
   sdk_version=$(jq .version $config_file)
-  [[ "x$sdk_version" == "x" || "x$sdk_version" == "xnull" ]] || {
+  echo "sdk query version '$query_version' resolved into SDK config JSON version '$sdk_version'" >&2 
+  if [[ -z "$sdk_version" || $sdk_version == "null" ]] ; then
     echo "error resolving sdk version or retrieving config JSON ($(jq .message $config_file))" >&2 
-    exit 10
-  }
+    return 10
+  fi
   
   (
     echo VULKAN_SDK_BUILD_DIR=$build_dir
