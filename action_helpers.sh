@@ -48,7 +48,7 @@ function resolve_vulkan_sdk_environment() {
     lunarg_fetch_sdk_config $platform $query_version > $config_file
   fi
 
-  if [[ -s "$config_file" ]] ; then echo "!config_file" >&2 ; return 3 ; fi
+  if [[ ! -s "$config_file" ]] ; then echo "!config_file" >&2 ; return 3 ; fi
   sdk_version=$(jq .version $config_file)
   echo "sdk query version '$query_version' resolved into SDK config JSON version '$sdk_version'" >&2 
   if [[ -z "$sdk_version" || $sdk_version == "null" ]] ; then
