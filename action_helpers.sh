@@ -50,7 +50,7 @@ function resolve_vulkan_sdk_environment() {
 
   test -s $config_file || { echo "!config_file" >&2 ; exit 3 ; }
   sdk_version=$(jq .version $config_file)
-  [[ -n $sdk_version && $sdk_version != null ]] || {
+  [[ "x$sdk_version" == "x" || "x$sdk_version" == "xnull" ]] || {
     echo "error resolving sdk version or retrieving config JSON ($(jq .message $config_file))" >&2 
     exit 10
   }
