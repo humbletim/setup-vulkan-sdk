@@ -41,7 +41,7 @@ function resolve_vulkan_sdk_environment() {
   if [[ -z "$config_file" && -z "$query_version" ]] ; then
     echo "either config_file or query_version must be specified" >&2 
     return 9
-  }
+  fi
   if [[ -z "$config_file" ]] ; then
     test -n "$query_version"
     config_file=$build_dir/config.json
