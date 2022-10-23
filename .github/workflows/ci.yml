@@ -35,6 +35,7 @@ jobs:
           vulkan-components: ${{ github.event.inputs.components }}
           vulkan-use-cache: true
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+        if: runner.os == 'Windows'
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
@@ -149,6 +150,7 @@ jobs:
           vulkan-use-cache: true
 
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+        if: runner.os == 'Windows'
       - name: Test Vulkan SDK Install
         shell: powershell
         run: |
