@@ -1,4 +1,4 @@
-# setup-vulkan-sdk v1.2.0
+# setup-vulkan-sdk v1.2.1
 
 [![test setup-vulkan-sdk](https://github.com/humbletim/setup-vulkan-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/humbletim/setup-vulkan-sdk/actions/workflows/ci.yml)
 
@@ -14,9 +14,9 @@ _note: if new to GitHub Actions please see GitHub Help Documentation [Quickstart
 
 ```yaml
   -name: Prepare Vulkan SDK
-   uses: humbletim/setup-vulkan-sdk@v1.2.0
+   uses: humbletim/setup-vulkan-sdk@v1.2.1
    with:
-     vulkan-query-version: 1.3.204.0
+     vulkan-query-version: 1.3.224.1
      vulkan-components: Vulkan-Headers, Vulkan-Loader
      vulkan-use-cache: true
 ```
@@ -29,7 +29,8 @@ As of now the following SDK release numbers are known to be usable across all th
 - 1.2.170.0
 - 1.2.189.0
 - 1.2.198.1
-- 1.3.204.0
+- 1.3.204.1
+- 1.3.224.1
 
 It is also possible to specify `latest` and the action will attempt to resolve automatically.
 
@@ -65,10 +66,10 @@ However, depending on your project's needs, it might make more sense to use unat
   - name: Fetch Vulkan SDK version spec
     shell: bash
     run: |
-      curl -o vulkan-sdk-config.json https://vulkan.lunarg.com/sdk/config/1.3.204.0/linux/config.json
+      curl -o vulkan-sdk-config.json https://vulkan.lunarg.com/sdk/config/1.3.224.1/linux/config.json
 
   - name: Configure Vulkan SDK using the downloaded spec
-    uses: humbletim/setup-vulkan-sdk@v1.2.0
+    uses: humbletim/setup-vulkan-sdk@v1.2.1
     with:
       vulkan-config-file: vulkan-sdk-config.json
       vulkan-components: Vulkan-Headers, Vulkan-Loader
