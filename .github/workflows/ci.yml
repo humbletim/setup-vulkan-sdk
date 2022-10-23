@@ -12,26 +12,27 @@ on:
           required: false
           default: 'Vulkan-Headers Vulkan-Loader SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang'
           # Vulkan-ValidationLayers robin-hood-hashing 
-        version:
-          description: Vulkan SDK Version
+        versions:
+          description: Vulkan SDK Versions
           required: false
-          default: latest
+          default: '[ "latest" ]'
+        oses:
+          description: 'Matrix OSes'
+          required: true
+          default: '[ "ubuntu-latest", "windows-latest", "windows-2022", "macos-12" ]'
 jobs:
   setup-all-matrix:
     if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}
     runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
-        include:
-          - runs-on: ubuntu-latest
-          - runs-on: windows-latest
-          - runs-on: windows-2022
-          - runs-on: macos-12
+        runs-on: ${{ fromJSON(github.event.inputs.oses) }}
+        version: ${{ fromJSON(github.event.inputs.versions) }}
     steps:
       - uses: actions/checkout@v3
       - uses: ./
         with:
-          vulkan-query-version: ${{ github.event.inputs.version }}
+          vulkan-query-version: ${{ matrix.version }}
           vulkan-components: ${{ github.event.inputs.components }}
           vulkan-use-cache: true
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
