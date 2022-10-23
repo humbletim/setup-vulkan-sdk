@@ -53,6 +53,7 @@ function resolve_vulkan_sdk_environment() {
   echo "sdk query version '$query_version' resolved into SDK config JSON version '$sdk_version'" >&2 
   if [[ -z "$sdk_version" || $sdk_version == "null" ]] ; then
     echo "error resolving sdk version or retrieving config JSON ($(jq .message $config_file))" >&2 
+    echo "::error::error resolving sdk version or retrieving config JSON from $remote_url_used ($(jq .message $config_file))" 
     return 10
   fi
   
