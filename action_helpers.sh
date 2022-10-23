@@ -13,7 +13,7 @@ remote_url_used=
 function lunarg_fetch_sdk_config() {
   local platform=$1 query_version=$2
   remote_url_used=https://vulkan.lunarg.com/sdk/config/$query_version/$platform/config.json
-  curl -sL $remote_url_used
+  curl -sL $remote_url_used || { echo "error retrieving $remote_url_used" ; exit 1 ; }
 }
 
 function resolve_vulkan_sdk_environment() {

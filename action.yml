@@ -38,7 +38,8 @@ runs:
         resolve_vulkan_sdk_environment \
           "${{ inputs.vulkan-query-version }}" \
           "${{ inputs.vulkan-config-file }}" \
-          "${{ inputs.vulkan-components }}"
+          "${{ inputs.vulkan-components }}" \
+          || { echo "could not resolve SDK version / JSON configuration" ; exit 42 ; }
 
     - name: Configure Development Environment Prerequisites
       shell: bash
