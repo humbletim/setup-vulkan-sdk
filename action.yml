@@ -89,11 +89,6 @@ runs:
         cat $VULKAN_SDK_BUILD_DIR/env
         echo "--------------------------------------------------------------"
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3.9
-      with:
-        limit-access-to-actor: true
-
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
       shell: vsdevenv x64 bash {0}
@@ -111,6 +106,12 @@ runs:
           -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
           -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
         || { echo "cmake configure failed" 2>& ; cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }
+
+    - name: Setup tmate session
+      if: always()
+      uses: mxschmitt/action-tmate@v3.9
+      with:
+        limit-access-to-actor: true
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
