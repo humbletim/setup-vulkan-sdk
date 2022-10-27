@@ -2,10 +2,21 @@
 
 set -e
 
+# prefixed error messages so gha annotations are included in the summary report 
+function ERROR() {
+  echo "::error::" "$@" >&2
+  return 1
+}
+
+function LOG() {
+  # echo "::notice::" "$@" >&2
+  echo "$@" >&2
+}
+
 function lunarg_get_latest_sdk_version() {
   local platform=$1
   local url=https://vulkan.lunarg.com/sdk/latest/$platform.txt
-  echo "note: resolving latest via webservices lookup: $url" >&2
+  LOG "[lunarg_get_latest_sdk_version] resolving latest via webservices lookup: $url" >&2
   curl -sL https://vulkan.lunarg.com/sdk/latest/$platform.txt
 }
 
@@ -13,7 +24,7 @@ remote_url_used=
 function lunarg_fetch_sdk_config() {
   local platform=$1 query_version=$2
   remote_url_used=https://vulkan.lunarg.com/sdk/config/$query_version/$platform/config.json
-  curl -sL $remote_url_used || { echo "error retrieving $remote_url_used" >&2 ; return 1 ; }
+  curl -sL $remote_url_used || ERROR "[lunarg_fetch_sdk_config] error retrieving $remote_url_used (curl exit code: $?)"
 }
 
 function resolve_vulkan_sdk_environment() {
@@ -39,8 +50,7 @@ function resolve_vulkan_sdk_environment() {
   test -d $VULKAN_SDK || mkdir -v $VULKAN_SDK
 
   if [[ -z "$config_file" && -z "$query_version" ]] ; then
-    echo "either config_file or query_version must be specified" >&2 
-    return 9
+    ERROR "[resolve_vulkan_sdk_environment] either config_file or query_version must be specified"
   fi
   if [[ -z "$config_file" ]] ; then
     test -n "$query_version"
@@ -48,13 +58,14 @@ function resolve_vulkan_sdk_environment() {
     lunarg_fetch_sdk_config $platform $query_version > $config_file
   fi
 
-  if [[ ! -s "$config_file" ]] ; then echo "!config_file" >&2 ; return 3 ; fi
-  sdk_version=$(jq .version $config_file)
-  echo "sdk query version '$query_version' resolved into SDK config JSON version '$sdk_version'" >&2 
+  [[ -s "$config_file" ]] || ERROR "zero byte config_file ($remote_url_used)"
+
+  sdk_version=$(jq -re .version $config_file || echo "")
+  LOG "[resolve_vulkan_sdk_environment] sdk query version '$query_version' resolved into SDK config JSON version '$sdk_version'" 
+  LOG "[resolve_vulkan_sdk_environment] sdk config repos: $(jq -r '[.repos|to_entries|.[].key]|sort|join(";")')"
+
   if [[ -z "$sdk_version" || $sdk_version == "null" ]] ; then
-    echo "error resolving sdk version or retrieving config JSON ($(jq .message $config_file))" >&2 
-    echo "::error::error resolving sdk version or retrieving config JSON from $remote_url_used ($(jq .message $config_file))" 
-    return 10
+    ERROR "[resolve_vulkan_sdk_environment] error resolving sdk version or retrieving config JSON from $remote_url_used ($(jq .message $config_file))" 
   fi
   
   (
@@ -78,7 +89,7 @@ function configure_sdk_prereqs() {
     Darwin) ;;
     Linux) 
       test -f /etc/os-release && . /etc/os-release
-      echo "VERSION_ID=$VERSION_ID"
+      LOG "[configure_sdk_prereqs] VERSION_ID=$VERSION_ID" 
       case $VERSION_ID in
         # legacy builds using 16.04
         16.04) 
