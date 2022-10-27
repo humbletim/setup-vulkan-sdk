@@ -5,7 +5,7 @@ set -e
 # prefixed error messages so gha annotations are included in the summary report 
 function ERROR() {
   echo "::error::" "$@" >&2
-  return 1
+  exit 1
 }
 
 function LOG() {
