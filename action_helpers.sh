@@ -78,7 +78,11 @@ function resolve_vulkan_sdk_environment() {
     echo VULKAN_SDK_CONFIG_VERSION=$sdk_version
     echo VULKAN_SDK_COMPONENTS=\"$sdk_components\"
   ) > $build_dir/env
-  cat $build_dir/env >&2
+
+  LOG "=== sdk build env ================================================"
+  LOG $build_dir/env
+  LOG "=================================================================="
+  
 }
 
 function configure_sdk_prereqs() {
