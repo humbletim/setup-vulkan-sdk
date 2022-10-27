@@ -89,6 +89,11 @@ runs:
         cat $VULKAN_SDK_BUILD_DIR/env
         echo "--------------------------------------------------------------"
 
+    - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3.9
+        with:
+          limit-access-to-actor: true
+
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
       shell: vsdevenv x64 bash {0}
