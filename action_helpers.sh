@@ -62,7 +62,7 @@ function resolve_vulkan_sdk_environment() {
 
   sdk_version=$(jq -re .version $config_file || echo "")
   LOG "[resolve_vulkan_sdk_environment] sdk query version '$query_version' resolved into SDK config JSON version '$sdk_version'" 
-  LOG "[resolve_vulkan_sdk_environment] sdk config repos: $(jq -r '[.repos|to_entries|.[].key]|sort|join(";")')"
+  LOG "[resolve_vulkan_sdk_environment] sdk config repos: $(jq -r '[.repos|to_entries|.[].key]|sort|join(";")' $config_file)"
 
   if [[ -z "$sdk_version" || $sdk_version == "null" ]] ; then
     ERROR "[resolve_vulkan_sdk_environment] error resolving sdk version or retrieving config JSON from $remote_url_used ($(jq .message $config_file))" 
