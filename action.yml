@@ -90,9 +90,9 @@ runs:
         echo "--------------------------------------------------------------"
 
     - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3.9
-        with:
-          limit-access-to-actor: true
+      uses: mxschmitt/action-tmate@v3.9
+      with:
+        limit-access-to-actor: true
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
