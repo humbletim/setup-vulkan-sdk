@@ -174,8 +174,6 @@ jobs:
           arch: x86
 
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
-        with:
-          arch: ${{ ./inputs.arch }}
       - name: Test Vulkan SDK Install
         shell: powershell
         run: |

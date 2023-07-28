@@ -94,7 +94,7 @@ runs:
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv "${{ inputs.cmake-arch-target }}" bash {0}
+      shell: vsdevenv "${{ inputs.arch }}" bash {0}
       run: |
         # cmake configure
         set -a
@@ -112,7 +112,7 @@ runs:
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv "${{ inputs.cmake-arch-target }}" bash {0}
+      shell: vsdevenv "${{ inputs.arch }}" bash {0}
       run: |
         # cmake build
         set -a
