@@ -103,7 +103,13 @@ runs:
           CC=cl.exe
           CXX=cl.exe
         fi
-        cmake -A ${{ inputs.arch }} -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
+
+        arch=x64
+        if ${{ inputs.arch }}==x86 ; then
+          arch=Win32
+        fi
+        
+        cmake -A $arch -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
           -DCMAKE_BUILD_TYPE=Release \
           -DVULKAN_SDK=${VULKAN_SDK} \
           -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \

@@ -48,7 +48,7 @@ jobs:
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           glslangValidator --version
           test -n "$VULKAN_SDK_VERSION"
-          cmake -A  ${{ github.event.inputs.arch }} -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build tests/build --config release
           ./tests/build/test_vulkan
   # 
@@ -88,14 +88,13 @@ jobs:
           vulkan-config-file: tests/vulkan_sdk_specs/linux.json
           vulkan-components: Vulkan-Headers, Vulkan-Loader
           vulkan-use-cache: true
-          arch: ${{ github.event.inputs.arch }}
 
       - name: Test Vulkan SDK Install
         run: |
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           test -n "$VULKAN_SDK_VERSION" || exit 4
-          cmake -A  ${{ github.event.inputs.arch }} -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build tests/build --config release -- -j2
           PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
   # 
@@ -187,7 +186,7 @@ jobs:
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
           echo "VULKAN_SDK=='$VULKAN_SDK'"
           test -n "$VULKAN_SDK_VERSION"
-          cmake -A  ${{ github.event.inputs.arch }} -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build tests/build --config release -- -j2
           glslangValidator --version
           PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
