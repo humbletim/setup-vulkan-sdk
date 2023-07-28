@@ -167,7 +167,7 @@ jobs:
           cd tests
 
           arch=x64
-          if ${{ inputs.arch }}==x86 ; then
+          if [[ ${{ inputs.arch }}==x86 ]] ; then
             arch=Win32
           fi
 
