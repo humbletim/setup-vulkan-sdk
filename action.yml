@@ -97,24 +97,29 @@ runs:
       shell: vsdevenv ${{ inputs.arch }} bash {0}
       run: |
         # cmake configure
-        set -a
-        . $PWD/_vulkan_build/env
-        if [[ $RUNNER_OS == 'Windows' ]] ; then
-          CC=cl.exe
-          CXX=cl.exe
-        fi
 
         arch=x64
         if ${{ inputs.arch }}==x86 ; then
           arch=Win32
         fi
+
+        set -a
+        . $PWD/_vulkan_build/env
+
+        param="-S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DVULKAN_SDK=${VULKAN_SDK} \
+                -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
+                -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
+        || { cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }"
+
+        if [[ $RUNNER_OS == 'Windows' ]] ; then
+          CC=cl.exe
+          CXX=cl.exe
+          param=-A $arch $param
+        fi
         
-        cmake -A $arch -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DVULKAN_SDK=${VULKAN_SDK} \
-          -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
-          -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
-        || { cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }
+        cmake $param
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'

@@ -165,7 +165,13 @@ jobs:
           echo "Vulkan SDK Version=='$env:VULKAN_SDK_VERSION'"
           if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
           cd tests
-          cmake -A  ${{ github.event.inputs.arch }} -G "Visual Studio 17 2022" -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+
+          arch=x64
+          if ${{ inputs.arch }}==x86 ; then
+            arch=Win32
+          fi
+
+          cmake -A $arch -G "Visual Studio 17 2022" -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build build --config release
           $ENV:PATH="$ENV:PATH;$ENV:VULKAN_SDK/bin"
           tail -100 build/CMakeFiles/*.log
