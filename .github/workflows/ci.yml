@@ -160,6 +160,31 @@ jobs:
           $ENV:PATH="$ENV:PATH;$ENV:VULKAN_SDK/bin"
           tail -100 build/CMakeFiles/*.log
           ./build/test_vulkan
+
+  setup-windows-with-version-powershell-x86:
+    if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          vulkan-query-version: 1.3.204.0
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
+          arch: x86
+
+      - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+      - name: Test Vulkan SDK Install
+        shell: powershell
+        run: |
+          echo "Vulkan SDK Version=='$env:VULKAN_SDK_VERSION'"
+          if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
+          cd tests
+          cmake -G "Visual Studio 16 2019" -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake --build build --config release
+          $ENV:PATH="$ENV:PATH;$ENV:VULKAN_SDK/bin"
+          tail -100 build/CMakeFiles/*.log
+          ./build/test_vulkan
   # 
   setup-macos-with-latest:
     if: ${{ contains(github.event.inputs.extra_tests, 'default') }}

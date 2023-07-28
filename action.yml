@@ -20,6 +20,10 @@ inputs:
     description: 'specify whether to cache VULKAN_SDK/ results between runs (using github actions/cache)'
     default: false
     required: false
+  arch:
+    description: 'Build architecture'
+    default: x64
+    required: false
 runs:
   using: "composite"
   steps: 
@@ -90,7 +94,7 @@ runs:
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv x64 bash {0}
+      shell: vsdevenv "${{ inputs.cmake-arch-target }}" bash {0}
       run: |
         # cmake configure
         set -a
@@ -108,7 +112,7 @@ runs:
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv x64 bash {0}
+      shell: vsdevenv "${{ inputs.cmake-arch-target }}" bash {0}
       run: |
         # cmake build
         set -a
