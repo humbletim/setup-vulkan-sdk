@@ -170,7 +170,7 @@ jobs:
         with:
           vulkan-query-version: 1.3.204.0
           vulkan-components: Vulkan-Headers, Vulkan-Loader
-          vulkan-use-cache: true
+          vulkan-use-cache: false
           arch: x86
 
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
@@ -195,7 +195,7 @@ jobs:
         with:
           vulkan-query-version: 1.3.204.0
           vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
-          vulkan-use-cache: true+
+          vulkan-use-cache: true
       - name: Test Vulkan SDK Install
         run: |
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
