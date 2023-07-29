@@ -94,6 +94,7 @@ runs:
         echo "--------------------------------------------------------------"
 
     - name: resolve arch
+      id: archSolver
       shell: bash
       env:
         resolvedArch: x64
@@ -111,7 +112,7 @@ runs:
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv $resolvedArch bash {0}
+      shell: vsdevenv ${{ steps[archSolver].resolvedArch }} bash {0}
       run: |
         # cmake configure
         set -a
@@ -134,7 +135,7 @@ runs:
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv $resolvedArch bash {0}
+      shell: vsdevenv ${{ archSolver.resolvedArch }} bash {0}
       run: |
         # cmake build
         set -a
