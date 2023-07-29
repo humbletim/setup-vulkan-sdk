@@ -26,6 +26,7 @@ inputs:
     required: false
 runs:
   using: "composite"
+
   steps: 
     - uses: humbletim/vsdevenv-shell@e87fcf2359929606ba32db358baef5ede4737aed
 
@@ -92,12 +93,11 @@ runs:
         cat $VULKAN_SDK_BUILD_DIR/env
         echo "--------------------------------------------------------------"
 
-    env:
-      resolvedArch: x64
-
     - name: resolve arch Win32 --> x86
+      env:
+        resolvedArch: x64
       if: github.event.inputs.arch=='Win32'
-      run: $env.resolvedArch='x86'
+      run: $resolvedArch='x86'
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
