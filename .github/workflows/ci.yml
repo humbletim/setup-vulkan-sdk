@@ -6,7 +6,7 @@ on:
         extra_tests:
           description: 'Enable additional CI tests'
           required: false
-          default: false
+          default: "default"
         components:
           description: Vulkan SDK Components
           required: false
@@ -19,7 +19,7 @@ on:
         arch:
           description: Target architecture, Windows only (x64 or Win32)
           required: false
-          default: x64
+          default: Win32
 jobs:
   setup-all-matrix:
     if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}

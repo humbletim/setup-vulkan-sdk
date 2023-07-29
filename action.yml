@@ -98,7 +98,11 @@ runs:
       env:
         resolvedArch: x64
       if: github.event.inputs.arch=='Win32'
-      run: $resolvedArch="x86"
+      run: |
+        #  resolve arch Win32 --> x86
+        echo "resolvedArch before: ${resolvedArch}"
+        resolvedArch="x86"
+        echo "resolvedArch after: ${resolvedArch}"
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
