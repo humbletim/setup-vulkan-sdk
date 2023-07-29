@@ -144,7 +144,7 @@ jobs:
   #         cmake --build tests/build --config release
   #         PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
   # 
-  setup-windows-with-version-powershell:
+  setup-windows-with-arch:
     if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
     runs-on: windows-latest
     steps:
@@ -156,11 +156,16 @@ jobs:
           vulkan-use-cache: false
           arch: ${{ github.event.inputs.arch }}
       
+        env:
+          resolvedArch: x64
+
+      - name: resolve arch Win32 --> x86
+        if: github.event.inputs.arch=='Win32'
+        run: $env.resolvedArch='x86'
+        
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
         with:
-          -arch: x64
-          if: ${{ github.event.inputs.arch=='Win32' }}
-          -arch: x86
+          -arch: $env.resolvedArch
       
       - name: Test Vulkan SDK Install
         shell: bash
