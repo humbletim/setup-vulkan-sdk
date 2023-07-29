@@ -156,11 +156,10 @@ jobs:
           vulkan-use-cache: false
           arch: ${{ github.event.inputs.arch }}
 
-      - name: resolve arch Win32 --> x86
+      - name: resolve arch Win32 --> x86 if needed
         shell: bash
-        if: github.event.inputs.arch == 'Win32'
         run: |
-          if [[ ${{ github.event.inputs.arch }} == 'Win32' ]] ; then
+          if [[ ${{ inputs.arch }} == 'Win32' ]] ; then
             echo "resolvedArch=x86" >> $GITHUB_ENV
           else
             echo "resolvedArch=x64" >> $GITHUB_ENV
