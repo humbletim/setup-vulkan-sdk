@@ -92,14 +92,16 @@ runs:
         cat $VULKAN_SDK_BUILD_DIR/env
         echo "--------------------------------------------------------------"
 
+    env:
+      resolvedArch: x64
+
+    - name: resolve arch Win32 --> x86
+      if: github.event.inputs.arch=='Win32'
+      run: $env.resolvedArch='x86'
+
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: |
-          arch=x64
-          if [[ ${{ inputs.arch }}==Win32 ]] ; then
-            arch=x86
-          fi
-          vsdevenv $arch bash {0}
+      shell: vsdevenv $resolvedArch bash {0}
       run: |
         # cmake configure
         set -a
@@ -122,11 +124,7 @@ runs:
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: |
-          arch=x64
-          if [[ ${{ inputs.arch }}==Win32 ]] ; then
-            arch=x86
-          fi | vsdevenv $arch bash {0}
+      shell: vsdevenv $resolvedArch bash {0}
       run: |
         # cmake build
         set -a
