@@ -103,6 +103,8 @@ runs:
           echo "Is Windows: true"
           if [[ ${{ inputs.arch }} == 'Win32' ]] ; then
             echo "resolvedArch=x86" >> $GITHUB_ENV
+          else
+            echo "resolvedArch=x64" >> $GITHUB_ENV
           fi
         else
           echo "resolvedArch=x64" >> $GITHUB_ENV
