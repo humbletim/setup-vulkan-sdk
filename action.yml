@@ -21,7 +21,7 @@ inputs:
     default: false
     required: false
   arch:
-    description: 'Build architecture'
+    description: 'Build architecture, Windows only (x64 or Win32)'
     default: x64
     required: false
 runs:
@@ -98,7 +98,8 @@ runs:
           arch=x64
           if [[ ${{ inputs.arch }}==Win32 ]] ; then
             arch=x86
-          fi | vsdevenv $arch bash {0}
+          fi
+          vsdevenv $arch bash {0}
       run: |
         # cmake configure
         set -a

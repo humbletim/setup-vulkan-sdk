@@ -17,7 +17,7 @@ on:
           required: false
           default: latest
         arch:
-          description: Target architecture (x64, x86)
+          description: Target architecture, Windows only (x64 or Win32)
           required: false
           default: x64
 jobs:
@@ -157,11 +157,9 @@ jobs:
           arch: ${{ github.event.inputs.arch }}
       
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
-        if: ${{ contains(github.event.inputs.arch, 'x64') }}
         with:
           -arch: x64
-        if: ${{ contains(github.event.inputs.arch, 'Win32') }}
-        with:
+          if: ${{ github.event.inputs.arch=='Win32' }}
           -arch: x86
       
       - name: Test Vulkan SDK Install
