@@ -157,16 +157,18 @@ jobs:
           arch: ${{ github.event.inputs.arch }}
 
       - name: resolve arch Win32 --> x86
-        id: archSolver
         shell: bash
-        env:
-          resolvedArch: x64
-        if: github.event.inputs.arch=='Win32'
-        run: resolvedArch='x86'
+        if: github.event.inputs.arch == 'Win32'
+        run: |
+          if [[ ${{ github.event.inputs.arch }} == 'Win32' ]] ; then
+            echo "resolvedArch=x86" >> $GITHUB_ENV
+          else
+            echo "resolvedArch=x64" >> $GITHUB_ENV
+          fi
         
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
         with:
-          arch: $archSolver.resolvedArch
+          arch: ${{ env.resolvedArch }}
       
       - name: Test Vulkan SDK Install
         shell: bash
