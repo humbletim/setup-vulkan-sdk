@@ -96,23 +96,21 @@ runs:
     - name: resolve arch
       id: archSolver
       shell: bash
-      env:
-        resolvedArch: x64
-      if: runner.os == 'Windows' && github.event.inputs.arch == 'Win32'
       run: |
         #  resolve arch for vsdenv when cmake arch is Win32 (WINDOWS ONLY)
+        
         if [[ $RUNNER_OS == 'Windows' ]] ; then
           echo "Is Windows: true"
+          if [[ ${{ github.event.inputs.arch }} == 'Win32' ]] ; then
+            echo "resolvedArch=x86" >> $GITHUB_ENV
+          fi
         else
-          echo "Is Windows: true"
+          echo "resolvedArch=x64" >> $GITHUB_ENV
         fi
-        echo "resolvedArch before: ${resolvedArch}"
-        resolvedArch="x86"
-        echo "resolvedArch after: ${resolvedArch}"
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv ${{ steps[archSolver].resolvedArch }} bash {0}
+      shell: vsdevenv ${{ env.resolvedArch }} bash {0}
       run: |
         # cmake configure
         set -a
@@ -135,7 +133,7 @@ runs:
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv ${{ archSolver.resolvedArch }} bash {0}
+      shell: vsdevenv ${{ env.resolvedArch }} bash {0}
       run: |
         # cmake build
         set -a
