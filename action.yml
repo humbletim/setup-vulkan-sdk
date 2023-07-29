@@ -93,13 +93,18 @@ runs:
         cat $VULKAN_SDK_BUILD_DIR/env
         echo "--------------------------------------------------------------"
 
-    - name: resolve arch Win32 --> x86
+    - name: resolve arch
       shell: bash
       env:
         resolvedArch: x64
-      if: github.event.inputs.arch=='Win32'
+      if: runner.os == 'Windows' && github.event.inputs.arch == 'Win32'
       run: |
-        #  resolve arch Win32 --> x86
+        #  resolve arch for vsdenv when cmake arch is Win32 (WINDOWS ONLY)
+        if [[ $RUNNER_OS == 'Windows' ]] ; then
+          echo "Is Windows: true"
+        else
+          echo "Is Windows: true"
+        fi
         echo "resolvedArch before: ${resolvedArch}"
         resolvedArch="x86"
         echo "resolvedArch after: ${resolvedArch}"

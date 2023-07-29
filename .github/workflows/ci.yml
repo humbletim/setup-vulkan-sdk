@@ -155,17 +155,18 @@ jobs:
           vulkan-components: Vulkan-Headers, Vulkan-Loader
           vulkan-use-cache: false
           arch: ${{ github.event.inputs.arch }}
-      
-        env:
-          resolvedArch: x64
 
       - name: resolve arch Win32 --> x86
+        id: archSolver
+        shell: bash
+        env:
+          resolvedArch: x64
         if: github.event.inputs.arch=='Win32'
-        run: $env.resolvedArch='x86'
+        run: resolvedArch='x86'
         
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
         with:
-          -arch: $env.resolvedArch
+          arch: $archSolver.resolvedArch
       
       - name: Test Vulkan SDK Install
         shell: bash
