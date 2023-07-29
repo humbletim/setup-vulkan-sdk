@@ -94,7 +94,11 @@ runs:
 
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv ${{ inputs.arch }} bash {0}
+      shell: |
+          arch=x64
+          if [[ ${{ inputs.arch }}==Win32 ]] ; then
+            arch=x86
+          fi | vsdevenv $arch bash {0}
       run: |
         # cmake configure
         set -a
@@ -104,12 +108,7 @@ runs:
         if [[ $RUNNER_OS == 'Windows' ]] ; then
           CC=cl.exe
           CXX=cl.exe
-
-          arch=x64
-          if [[ ${{ inputs.arch }}==x86 ]] ; then
-            arch=Win32
-          fi
-          archParam="-A ${arch}"
+          archParam="-A ${{ inputs.arch }}"
         fi
 
         echo $archParam
@@ -122,7 +121,11 @@ runs:
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv ${{ inputs.arch }} bash {0}
+      shell: |
+          arch=x64
+          if [[ ${{ inputs.arch }}==Win32 ]] ; then
+            arch=x86
+          fi | vsdevenv $arch bash {0}
       run: |
         # cmake build
         set -a

@@ -155,10 +155,15 @@ jobs:
           vulkan-components: Vulkan-Headers, Vulkan-Loader
           vulkan-use-cache: false
           arch: ${{ github.event.inputs.arch }}
-
+      
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+        if: ${{ contains(github.event.inputs.arch, 'x64') }}
         with:
-          arch: ${{ github.event.inputs.arch }}
+          -arch: x64
+        if: ${{ contains(github.event.inputs.arch, 'Win32') }}
+        with:
+          -arch: x86
+      
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
@@ -170,12 +175,7 @@ jobs:
 
           cd tests
 
-          arch=x64
-          if [[ ${{ inputs.arch }}==x86 ]] ; then
-            arch=Win32
-          fi
-
-          cmake -A $arch -G "Visual Studio 17 2022" -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake -A ${{ inputs.arch }} -G "Visual Studio 17 2022" -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build build --config release
           PATH="$PATH:$VULKAN_SDK/bin"
           ./build/test_vulkan
