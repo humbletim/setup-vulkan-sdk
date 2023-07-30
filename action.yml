@@ -94,10 +94,9 @@ runs:
         echo "--------------------------------------------------------------"
 
     - name: resolve arch
-      id: archSolver
       shell: bash
       run: |
-        #  resolve arch for vsdenv when cmake arch is Win32 (WINDOWS ONLY)
+        #  resolve arch to x86 for vsdenv when cmake arch target is Win32 (WINDOWS ONLY); x64 for everything else
         
         if [[ $RUNNER_OS == 'Windows' ]] ; then
           echo "Is Windows: true"
@@ -124,14 +123,13 @@ runs:
           CXX=cl.exe
           archParam="-A ${{ inputs.arch }}"
         fi
-
-        echo $archParam
+        
         cmake ${archParam} -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DVULKAN_SDK=${VULKAN_SDK} \
-                -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
-                -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
-                || { cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }
+        -DCMAKE_BUILD_TYPE=Release \
+        -DVULKAN_SDK=${VULKAN_SDK} \
+        -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
+        -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
+        || { cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
