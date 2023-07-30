@@ -20,8 +20,13 @@ inputs:
     description: 'specify whether to cache VULKAN_SDK/ results between runs (using github actions/cache)'
     default: false
     required: false
+  arch:
+    description: 'Build architecture, Windows only (x64 or Win32)'
+    default: x64
+    required: false
 runs:
   using: "composite"
+
   steps: 
     - uses: humbletim/vsdevenv-shell@e87fcf2359929606ba32db358baef5ede4737aed
 
@@ -88,27 +93,47 @@ runs:
         cat $VULKAN_SDK_BUILD_DIR/env
         echo "--------------------------------------------------------------"
 
+    - name: resolve arch
+      shell: bash
+      run: |
+        #  resolve arch to x86 for vsdenv when cmake arch target is Win32 (WINDOWS ONLY); x64 for everything else
+        
+        if [[ $RUNNER_OS == 'Windows' ]] ; then
+          echo "Is Windows: true"
+          if [[ ${{ inputs.arch }} == 'Win32' ]] ; then
+            echo "resolvedArch=x86" >> $GITHUB_ENV
+          else
+            echo "resolvedArch=x64" >> $GITHUB_ENV
+          fi
+        else
+          echo "resolvedArch=x64" >> $GITHUB_ENV
+        fi
+
     - name: Configure Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv x64 bash {0}
+      shell: vsdevenv ${{ env.resolvedArch }} bash {0}
       run: |
         # cmake configure
         set -a
         . $PWD/_vulkan_build/env
+
+        archParam=""
         if [[ $RUNNER_OS == 'Windows' ]] ; then
           CC=cl.exe
           CXX=cl.exe
+          archParam="-A ${{ inputs.arch }}"
         fi
-        cmake -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DVULKAN_SDK=${VULKAN_SDK} \
-          -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
-          -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
+        
+        cmake ${archParam} -S $GITHUB_ACTION_PATH -B ${VULKAN_SDK_BUILD_DIR} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DVULKAN_SDK=${VULKAN_SDK} \
+        -DVULKAN_SDK_CONFIG="${VULKAN_SDK_CONFIG_FILE}" \
+        -DVULKAN_SDK_COMPONENTS="${VULKAN_SDK_COMPONENTS}" \
         || { cat _vulkan_build/CMakeFiles/*.log ; exit 4 ; }
 
     - name: Build Vulkan SDK Components
       if: steps.vulkan-cached-sdk.outputs.cache-hit != 'true'
-      shell: vsdevenv x64 bash {0}
+      shell: vsdevenv ${{ env.resolvedArch }} bash {0}
       run: |
         # cmake build
         set -a

@@ -16,6 +16,10 @@ on:
           description: Vulkan SDK Version
           required: false
           default: latest
+        arch:
+          description: Windows only, Target architecture (x64 or Win32)
+          required: false
+          default: Win32
 jobs:
   setup-all-matrix:
     if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}
@@ -81,7 +85,7 @@ jobs:
         with:
           vulkan-config-file: tests/vulkan_sdk_specs/linux.json
           vulkan-components: Vulkan-Headers, Vulkan-Loader
-          vulkan-use-cache: true+
+          vulkan-use-cache: true
       - name: Test Vulkan SDK Install
         run: |
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
@@ -137,7 +141,7 @@ jobs:
   #         cmake --build tests/build --config release
   #         PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
   # 
-  setup-windows-with-version-powershell:
+  setup-windows-with-arch:
     if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
     runs-on: windows-latest
     steps:
@@ -146,19 +150,34 @@ jobs:
         with:
           vulkan-query-version: 1.3.204.0
           vulkan-components: Vulkan-Headers, Vulkan-Loader
-          vulkan-use-cache: true
+          vulkan-use-cache: false
+          arch: ${{ github.event.inputs.arch }}
 
-      - uses: seanmiddleditch/gha-setup-vsdevenv@v4
-      - name: Test Vulkan SDK Install
-        shell: powershell
+      - name: resolve arch Win32 --> x86 if needed
+        shell: bash
         run: |
-          echo "Vulkan SDK Version=='$env:VULKAN_SDK_VERSION'"
-          if (!$env:VULKAN_SDK_VERSION) { throw "vulkan sdk install error" }
+          if [[ ${{ inputs.arch }} == 'Win32' ]] ; then
+            echo "resolvedArch=x86" >> $GITHUB_ENV
+          else
+            echo "resolvedArch=x64" >> $GITHUB_ENV
+          fi
+        
+      - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+        with:
+          arch: ${{ env.resolvedArch }}
+      
+      - name: Test Vulkan SDK Install
+        shell: bash
+        run: |
+          echo "Vulkan SDK Version==$VULKAN_SDK_VERSION"
+          if [[ -z "$VULKAN_SDK_VERSION" ]] ; then
+            echo "vulkan sdk install error"
+            exit 1
+          fi
           cd tests
-          cmake -G "Visual Studio 16 2019" -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
+          cmake -A ${{ inputs.arch }} -G "Visual Studio 17 2022" -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build build --config release
-          $ENV:PATH="$ENV:PATH;$ENV:VULKAN_SDK/bin"
-          tail -100 build/CMakeFiles/*.log
+          PATH="$PATH:$VULKAN_SDK/bin"
           ./build/test_vulkan
   # 
   setup-macos-with-latest:
@@ -170,7 +189,7 @@ jobs:
         with:
           vulkan-query-version: 1.3.204.0
           vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
-          vulkan-use-cache: true+
+          vulkan-use-cache: true
       - name: Test Vulkan SDK Install
         run: |
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
