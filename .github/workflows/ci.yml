@@ -35,8 +35,17 @@ jobs:
           vulkan-query-version: ${{ matrix.version }}
           vulkan-components: ${{ github.event.inputs.components }}
           vulkan-use-cache: true
-      - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+      - name: seanmiddleditch/gha-setup-vsdevenv@v4
         if: runner.os == 'Windows'
+        uses: actions/checkout@v4
+        with:
+          repository: seanmiddleditch/gha-setup-vsdevenv@v4
+          path: gha-setup-vsdevenv
+      - uses: ./gha-setup-vsdevenv
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3.9
+        with:
+          limit-access-to-actor: true
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
