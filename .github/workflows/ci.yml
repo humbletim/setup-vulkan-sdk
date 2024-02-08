@@ -42,12 +42,12 @@ jobs:
           repository: seanmiddleditch/gha-setup-vsdevenv
           ref: v4
           path: gha-setup-vsdevenv
-      - name: ./gha-setup-vsdevenv/index.js
-        shell: bash
+      - name: ./gha-setup-vsdevenv/dist/index.js
+        shell: cmd
         working-directory: gha-setup-vsdevenv
         run: |
           npm install @actions/core
-          Path="$PATH" node dist/index.js | grep -v ::set-output
+          node dist/index.js | grep -v ::set-output
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
