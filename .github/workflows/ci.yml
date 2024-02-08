@@ -46,7 +46,7 @@ jobs:
         shell: bash
         working-directory: gha-setup-vsdevenv
         run: |
-          npm i
+          npm install @actions/core
           node index.js
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3.9
