@@ -23,23 +23,10 @@ _note: if new to GitHub Actions please see GitHub Help Documentation [Quickstart
 
 SDK version numbers are resolved into corresponding Khronos repos and commit points using the official LunarG [SDK web API](https://vulkan.lunarg.com/content/view/latest-sdk-version-api).
 
-As of <span title="2024-02-08">now</span> the following SDK release numbers are known to be usable across all three primary platforms (linux/mac/windows):
- - 1.2.162.0
- - 1.2.162.1
- - 1.2.170.0
- - 1.2.189.0
+Example SDK release numbers that are <span title="2024-02-08">currently</span> known to be usable across all three primary platforms (linux/mac/windows):
  - 1.2.198.1
  - 1.3.204.1
- - 1.3.211.0
- - 1.3.216.0
- - 1.3.224.1
- - 1.3.231.1
- - 1.3.236.0
  - 1.3.239.0
- - 1.3.243.0
- - 1.3.250.1
- - 1.3.261.1
- - 1.3.268.0
  - 1.3.275.0
 
 It is also possible to specify `latest` and the action will attempt to resolve automatically.
