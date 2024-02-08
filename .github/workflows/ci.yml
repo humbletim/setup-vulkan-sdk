@@ -40,22 +40,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: seanmiddleditch/gha-setup-vsdevenv
-          path: gha-setup-vsdevenv
           ref: v4
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3.9
-        with:
-          limit-access-to-actor: true
+          path: gha-setup-vsdevenv
       - name: ./gha-setup-vsdevenv/index.js
         shell: bash
         working-directory: gha-setup-vsdevenv
         run: |
           npm install @actions/core
-          node dist/index.js
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3.9
-        with:
-          limit-access-to-actor: true
+          Path="$PATH" node dist/index.js | grep -v ::set-output
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
