@@ -39,8 +39,9 @@ jobs:
         if: runner.os == 'Windows'
         uses: actions/checkout@v4
         with:
-          repository: seanmiddleditch/gha-setup-vsdevenv@v4
+          repository: seanmiddleditch/gha-setup-vsdevenv
           path: gha-setup-vsdevenv
+          ref: v4
       - uses: ./gha-setup-vsdevenv
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3.9
