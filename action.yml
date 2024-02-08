@@ -1,8 +1,8 @@
 name: 'Setup Vulkan SDK'
 description: 'Automatically builds Vulkan SDK components from source.'
 branding:
-  icon: 'play'  
-  color: 'red'  
+  icon: 'play'
+  color: 'red'
 inputs:
   vulkan-config-file:
     description: 'Vulkan SDK configuration path (prefer this to relying on vulkan-query-version lookup)'
@@ -22,7 +22,7 @@ inputs:
     required: false
 runs:
   using: "composite"
-  steps: 
+  steps:
     - uses: humbletim/vsdevenv-shell@e87fcf2359929606ba32db358baef5ede4737aed
 
     - name: Resolve Vulkan SDK Configuration
@@ -42,8 +42,8 @@ runs:
         # dev prerequisites
         case `uname -s` in
           Darwin) ;;
-          Linux) 
-            sudo apt-get -qq update 
+          Linux)
+            sudo apt-get -qq update
             sudo apt-get -qq install -y libwayland-dev libxrandr-dev
           ;;
           MINGW*) ;;
@@ -55,7 +55,7 @@ runs:
       run: |
         # cache-key.txt
         . $PWD/_vulkan_build/env
-        ( 
+        (
           echo VULKAN_SDK_CONFIG_FILE=$(sha256sum $VULKAN_SDK_CONFIG_FILE || openssl sha256 $VULKAN_SDK_CONFIG_FILE)
           echo VULKAN_SDK_CONFIG_VERSION=$VULKAN_SDK_CONFIG_VERSION
           echo VULKAN_SDK_COMPONENTS=\"$VULKAN_SDK_COMPONENTS\"
@@ -65,7 +65,7 @@ runs:
     - name: Check Vulkan SDK Cache
       id: vulkan-cached-sdk
       if: inputs.vulkan-use-cache != 'false'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: VULKAN_SDK
         key: ${{ runner.os }}-vulkan-cached-sdk-${{ hashFiles('_vulkan_build/cache-key.txt') }}
