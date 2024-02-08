@@ -16,14 +16,14 @@ _note: if new to GitHub Actions please see GitHub Help Documentation [Quickstart
   -name: Prepare Vulkan SDK
    uses: humbletim/setup-vulkan-sdk@v1.2.1
    with:
-     vulkan-query-version: 1.3.224.1
+     vulkan-query-version: 1.3.275.0
      vulkan-components: Vulkan-Headers, Vulkan-Loader
      vulkan-use-cache: true
 ```
 
 SDK version numbers are resolved into corresponding Khronos repos and commit points using the official LunarG [SDK web API](https://vulkan.lunarg.com/content/view/latest-sdk-version-api).
 
-As of now the following SDK release numbers are known to be usable across all three primary platforms (linux/mac/windows):
+As of <span title="2024-02-08">now</span> the following SDK release numbers are known to be usable across all three primary platforms (linux/mac/windows):
  - 1.2.162.0
  - 1.2.162.1
  - 1.2.170.0
@@ -31,8 +31,16 @@ As of now the following SDK release numbers are known to be usable across all th
  - 1.2.198.1
  - 1.3.204.1
  - 1.3.211.0
--  1.3.216.0
--  1.3.224.1
+ - 1.3.216.0
+ - 1.3.224.1
+ - 1.3.231.1
+ - 1.3.236.0
+ - 1.3.239.0
+ - 1.3.243.0
+ - 1.3.250.1
+ - 1.3.261.1
+ - 1.3.268.0
+ - 1.3.275.0
 
 It is also possible to specify `latest` and the action will attempt to resolve automatically.
 
@@ -46,7 +54,7 @@ However, depending on your project's needs, it might make more sense to use unat
 
 ## Action Parameters
 
-- **`vulkan-query-version`**: valid SDK release number (eg: `1.2.162.1` or `latest`). *[required]*
+- **`vulkan-query-version`**: valid SDK release number (eg: `1.3.275.0` or `latest`). *[required]*
 - **`vulkan-config-file`**: project-local config.json file path. *[optional; default: '']*
   - note: config.json files already contain versioning info, so when specified vulkan-query-version will be ignored
 - **`vulkan-use-cache`**: if `true` the VULKAN_SDK folder is cached and restored across builds. *[optional; default=false]*
