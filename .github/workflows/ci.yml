@@ -35,13 +35,15 @@ jobs:
           vulkan-query-version: ${{ matrix.version }}
           vulkan-components: ${{ github.event.inputs.components }}
           vulkan-use-cache: true
-      - name: seanmiddleditch/gha-setup-vsdevenv@v4
+      - name: checkout seanmiddleditch/gha-setup-vsdevenv@v4
         if: runner.os == 'Windows'
         uses: actions/checkout@v4
         with:
           repository: seanmiddleditch/gha-setup-vsdevenv
           ref: v4
           path: gha-setup-vsdevenv
+      - name: execute seanmiddleditch/gha-setup-vsdevenv@v4
+        if: runner.os == 'Windows'
         shell: cmd
         working-directory: gha-setup-vsdevenv
         run: |
