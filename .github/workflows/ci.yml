@@ -42,7 +42,6 @@ jobs:
           repository: seanmiddleditch/gha-setup-vsdevenv
           ref: v4
           path: gha-setup-vsdevenv
-      - name: ./gha-setup-vsdevenv/dist/index.js
         shell: cmd
         working-directory: gha-setup-vsdevenv
         run: |
