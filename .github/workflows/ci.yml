@@ -12,29 +12,43 @@ on:
           required: false
           default: 'Vulkan-Headers Vulkan-Loader SPIRV-Headers SPIRV-Cross SPIRV-Tools SPIRV-Reflect Glslang'
           # Vulkan-ValidationLayers robin-hood-hashing 
-        version:
-          description: Vulkan SDK Version
+        versions:
+          description: Vulkan SDK Versions
           required: false
-          default: latest
+          default: '[ "latest" ]'
+        oses:
+          description: 'Matrix OSes'
+          required: true
+          default: '[ "ubuntu-latest", "windows-latest", "windows-2022", "macos-12" ]'
 jobs:
   setup-all-matrix:
     if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}
     runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
-        include:
-          - runs-on: ubuntu-latest
-          - runs-on: windows-latest
-          - runs-on: windows-2022
-          - runs-on: macos-latest
+        runs-on: ${{ fromJSON(github.event.inputs.oses) }}
+        version: ${{ fromJSON(github.event.inputs.versions) }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ./
         with:
-          vulkan-query-version: ${{ github.event.inputs.version }}
+          vulkan-query-version: ${{ matrix.version }}
           vulkan-components: ${{ github.event.inputs.components }}
           vulkan-use-cache: true
-      - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+      - name: checkout seanmiddleditch/gha-setup-vsdevenv@v4
+        if: runner.os == 'Windows'
+        uses: actions/checkout@v4
+        with:
+          repository: seanmiddleditch/gha-setup-vsdevenv
+          ref: v4
+          path: gha-setup-vsdevenv
+      - name: execute seanmiddleditch/gha-setup-vsdevenv@v4
+        if: runner.os == 'Windows'
+        shell: cmd
+        working-directory: gha-setup-vsdevenv
+        run: |
+          npm install @actions/core
+          node dist/index.js | grep -v ::set-output
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
@@ -49,7 +63,7 @@ jobs:
   # setup-ubuntu-with-fetched-config-json:
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - name: Fetch config.json
   #       run: |
   #         curl -s -o vulkan_ubuntu_config.json https://vulkan.lunarg.com/sdk/config/1.2.182.0/linux/config.json
@@ -76,7 +90,7 @@ jobs:
     if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           vulkan-config-file: tests/vulkan_sdk_specs/linux.json
@@ -94,7 +108,7 @@ jobs:
   # setup-windows-prebuilt:
   #   runs-on: windows-latest
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - uses: ./
   #       with:
   #         vulkan-components: prebuilt loader
@@ -116,9 +130,9 @@ jobs:
   #         .\tests\build\test_vulkan || true || exit /b 4
   # 
   # setup-macos-using-prebuilt-cached:
-  #   runs-on: macos-latest
+  #   runs-on: macos-12
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - uses: ./
   #       with:
   #         vulkan-version: 1.2.189.0
@@ -141,7 +155,7 @@ jobs:
     if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           vulkan-query-version: 1.3.204.0
@@ -149,6 +163,7 @@ jobs:
           vulkan-use-cache: true
 
       - uses: seanmiddleditch/gha-setup-vsdevenv@v4
+        if: runner.os == 'Windows'
       - name: Test Vulkan SDK Install
         shell: powershell
         run: |
@@ -163,9 +178,9 @@ jobs:
   # 
   setup-macos-with-latest:
     if: ${{ contains(github.event.inputs.extra_tests, 'default') }}
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ./
         with:
           vulkan-query-version: 1.3.204.0
@@ -187,7 +202,7 @@ jobs:
   #   container:
   #     image: ubuntu:16.04
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - name: Install Python3
   #       run: |
   #         apt-get -qq update
@@ -208,7 +223,7 @@ jobs:
   #   if: ${{ github.event.inputs.extra_tests == 'true' }}
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - uses: ./
   #       with:
   #         vulkan-version: 1.2.162.0
@@ -226,7 +241,7 @@ jobs:
   #   if: ${{ github.event.inputs.extra_tests == 'true' }}
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - uses: ./
   #       with:
   #         vulkan-components: prebuilt
@@ -244,7 +259,7 @@ jobs:
   #   if: ${{ github.event.inputs.extra_tests == 'true' }}
   #   runs-on: windows-latest
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - uses: ./
   #     - name: Test Vulkan SDK Install
   #       shell: cmd
@@ -259,9 +274,9 @@ jobs:
   # 
   # setup-macos-with-version:
   #   if: ${{ github.event.inputs.extra_tests == 'true' }}
-  #   runs-on: macos-latest
+  #   runs-on: macos-12
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - uses: ./
   #       with:
   #         vulkan-version: 1.2.189.0
