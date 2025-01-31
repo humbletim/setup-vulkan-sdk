@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04-arm, ubuntu-22.04-arm]
+        os: [ ubuntu-24.04-arm, ubuntu-22.04-arm ]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -76,13 +76,13 @@ jobs:
             CC=/usr/bin/aarch64-linux-gnu-gcc-14 CXX=/usr/bin/aarch64-linux-gnu-g++-14 ./vulkansdk --maxjobs vulkan-loader vulkan-validationlayers vulkan-extensionlayer
           fi
 
-      - name: Package SDK as tar.xz
+      # When an Artifact is uploaded, all the files are assembled into an immutable Zip archive. There is currently no way to download artifacts in a format other than a Zip or to download individual artifact contents.
+      - name: Rename SDK Directory for Artifact
         run: |
-          tar -cJf "vulkansdk-linux-arm64-${{ env.SDK_VERSION }}.tar.xz" "${{ env.SDK_DIR }}"
+          mv "${{ env.SDK_DIR }}" "vulkansdk-linux-arm64-${{ matrix.os }}-${{ env.SDK_VERSION }}"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: vulkan-sdk-arm64-${{ matrix.os }}
-          path: vulkansdk-linux-arm64-${{ env.SDK_VERSION }}.tar.xz
-          compression-level: 0
+          name: vulkansdk-linux-arm64-${{ matrix.os }}-${{ env.SDK_VERSION }}
+          path: vulkansdk-linux-arm64-${{ matrix.os }}-${{ env.SDK_VERSION }}
