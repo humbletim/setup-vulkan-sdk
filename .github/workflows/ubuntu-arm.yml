@@ -1,0 +1,88 @@
+name: Build-Vulkan-SDK-ARM
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Vulkan SDK version (e.g., 1.4.304.0)'
+        required: false
+        default: 'latest'
+
+jobs:
+  build-linux-arm:
+    name: Build Vulkan-SDK-ARM for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-24.04-arm, ubuntu-22.04-arm]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set version variable
+        id: vars
+        run: |
+          if [[ "${{ github.event.inputs.version }}" == "latest" || -z "${{ github.event.inputs.version }}" ]]; then
+            echo "SDK_URL=https://sdk.lunarg.com/sdk/download/latest/linux/vulkan-sdk.tar.xz" >> $GITHUB_ENV
+            echo "Using default SDK version: latest"
+          else
+            echo "SDK_URL=https://sdk.lunarg.com/sdk/download/${{ github.event.inputs.version }}/linux/vulkansdk-linux-arm64-${{ github.event.inputs.version }}.tar.xz" >> $GITHUB_ENV
+            echo "Using specified SDK version: ${{ github.event.inputs.version }}"
+          fi
+
+      - name: Update APT
+        run: sudo apt update
+
+      - name: Install Host Dependencies
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu-22.04-arm" ]]; then
+            sudo apt install cmake ninja-build gcc-12 g++-12 bison ocaml-core xz-utils pkg-config python3-pip -y
+          elif [[ "${{ matrix.os }}" == "ubuntu-24.04-arm" ]]; then
+            sudo apt install cmake ninja-build gcc-14 g++-14 bison ocaml-core xz-utils pkg-config python3-pip -y
+          fi
+
+      - name: Install Python
+        run: pip3 install setuptools wheel
+
+      - name: Install Target Dependencies
+        run: |
+          sudo apt install libglm-dev libxcb-dri3-0 libxcb-present0 libpciaccess0 \
+          libpng-dev libxcb-keysyms1-dev libxcb-dri3-dev libx11-dev \
+          libwayland-dev libxrandr-dev libxcb-randr0-dev libxcb-ewmh-dev \
+          libx11-xcb-dev liblz4-dev libzstd-dev \
+          libxml2-dev wayland-protocols -y --no-install-recommends
+
+      - name: Download SDK
+        run: curl -L -o vulkan-sdk.tar.xz "$SDK_URL"
+
+      - name: Extract SDK and Determine SDK Directory
+        run: |
+          tar -xJf vulkan-sdk.tar.xz
+          SDK_DIR=$(find . -maxdepth 1 -type d -name '1.*' | head -n 1)
+          echo "SDK_DIR=${SDK_DIR}" >> $GITHUB_ENV
+          echo "SDK_VERSION=$(basename ${SDK_DIR})" >> $GITHUB_ENV
+
+      - name: Remove x86_64 directory
+        run: |
+          cd "${{ env.SDK_DIR }}"
+          rm -rf x86_64
+
+      - name: Build SDK
+        run: |
+          cd "${{ env.SDK_DIR }}"
+          if [[ "${{ matrix.os }}" == "ubuntu-22.04-arm" ]]; then
+            CC=/usr/bin/aarch64-linux-gnu-gcc-12 CXX=/usr/bin/aarch64-linux-gnu-g++-12 ./vulkansdk --maxjobs vulkan-loader vulkan-validationlayers vulkan-extensionlayer
+          elif [[ "${{ matrix.os }}" == "ubuntu-24.04-arm" ]]; then
+            CC=/usr/bin/aarch64-linux-gnu-gcc-14 CXX=/usr/bin/aarch64-linux-gnu-g++-14 ./vulkansdk --maxjobs vulkan-loader vulkan-validationlayers vulkan-extensionlayer
+          fi
+
+      - name: Package SDK as tar.xz
+        run: |
+          tar -cJf "vulkansdk-linux-arm64-${{ env.SDK_VERSION }}.tar.xz" "${{ env.SDK_DIR }}"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulkan-sdk-arm64-${{ matrix.os }}
+          path: vulkansdk-linux-arm64-${{ env.SDK_VERSION }}.tar.xz
+          compression-level: 0

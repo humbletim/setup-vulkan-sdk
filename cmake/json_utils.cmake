@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.20)
 # note: 3.19+ needed for JSON parsing
 
 # json_get_subprops("${_json}" [key,key...] PROPERTIES property [property...])

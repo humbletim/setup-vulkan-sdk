@@ -99,7 +99,7 @@ function configure_sdk_prereqs() {
         16.04) 
           apt-get -qq -o=Dpkg::Use-Pty=0 update
           apt-get -qq -o=Dpkg::Use-Pty=0 install -y jq curl git make build-essential ninja-build
-          curl -s -L https://github.com/Kitware/CMake/releases/download/v3.20.3/cmake-3.20.3-Linux-x86_64.tar.gz | tar --strip 1 -C $vulkan_build_tools -xzf -
+          curl -s -L https://github.com/Kitware/CMake/releases/download/v3.31.5/cmake-3.31.5-linux-x86_64.tar.gz | tar --strip 1 -C $vulkan_build_tools -xzf -
           hash
           cmake --version
         ;;
@@ -108,7 +108,7 @@ function configure_sdk_prereqs() {
       esac
     ;;
     MINGW*)
-     curl -L -o $vulkan_build_tools/ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
+     curl -L -o $vulkan_build_tools/ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
      unzip -d $vulkan_build_tools/bin $vulkan_build_tools/ninja-win.zip
     ;;
   esac

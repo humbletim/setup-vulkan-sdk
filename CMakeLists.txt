@@ -11,7 +11,7 @@
 #   https://vulkan.lunarg.com/sdk/config/VERSION/PLATFORM/config.json
 #  (see: https://vulkan.lunarg.com/content/view/latest-sdk-version-api)
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.20)
 # note: 3.19+ needed for JSON parsing
 
 include(ExternalProject)
