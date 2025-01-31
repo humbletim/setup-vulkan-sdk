@@ -104,6 +104,27 @@ jobs:
           cmake -B tests/build -S tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=.
           cmake --build tests/build --config release -- -j2
           PATH=$PATH:$VULKAN_SDK/bin ./tests/build/test_vulkan
+
+  download-arm-sdk:
+    runs-on: ubuntu-latest # You can use any runner for this
+    needs: [ setup-all-matrix, setup-ubuntu-with-local-config-json, setup-windows-with-version-powershell, setup-macos-with-latest ] # if you want to run this job after the others
+    steps:
+      - name: Download ARM SDK (Ubuntu 22.04)
+        uses: actions/download-artifact@v4
+        with:
+          name: vulkansdk-linux-arm64-ubuntu-22.04-arm-*
+          path: arm-sdk-22.04
+
+      - name: Download ARM SDK (Ubuntu 24.04)
+        uses: actions/download-artifact@v4
+        with:
+          name: vulkansdk-linux-arm64-ubuntu-24.04-arm-*
+          path: arm-sdk-24.04
+
+      - name: List downloaded artifacts
+        run: |
+          ls -l arm-sdk-22.04
+          ls -l arm-sdk-24.04
   # 
   # setup-windows-prebuilt:
   #   runs-on: windows-latest
