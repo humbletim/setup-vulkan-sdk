@@ -17,7 +17,7 @@ function lunarg_get_latest_sdk_version() {
   local platform=$1
   local url=https://vulkan.lunarg.com/sdk/latest/$platform.txt
   LOG "[lunarg_get_latest_sdk_version] resolving latest via webservices lookup: $url" >&2
-  curl -sL https://vulkan.lunarg.com/sdk/latest/$platform.txt
+  curl -sL $url
 }
 
 remote_url_used=
@@ -33,16 +33,27 @@ function resolve_vulkan_sdk_environment() {
   local sdk_components=$(echo "$3" | xargs echo | sed -e 's@[,; ]\+@;@g')
   local base_dir=$PWD
   local platform=unknown
-  
+
+  # Enhanced platform detection for aarch64
   case `uname -s` in
-    Darwin) platform=mac ;;
-    Linux) platform=linux ;;
+    Darwin)
+      case `uname -m` in
+        arm64) platform=mac-arm64 ;;
+        *) platform=mac ;;
+      esac
+      ;;
+    Linux)
+      case `uname -m` in
+        aarch64) platform=linux-arm64 ;;
+        *) platform=linux ;;
+      esac
+      ;;
     MINGW*)
       platform=windows
       base_dir=$(pwd -W)
-    ;;
+      ;;
   esac
-  
+
   build_dir=$base_dir/_vulkan_build
   test -d $build_dir || mkdir -v $build_dir
 
@@ -61,13 +72,13 @@ function resolve_vulkan_sdk_environment() {
   [[ -s "$config_file" ]] || ERROR "zero byte config_file ($remote_url_used)"
 
   sdk_version=$(jq -re .version $config_file || echo "")
-  LOG "[resolve_vulkan_sdk_environment] sdk query version '$query_version' resolved into SDK config JSON version '$sdk_version'" 
+  LOG "[resolve_vulkan_sdk_environment] sdk query version '$query_version' resolved into SDK config JSON version '$sdk_version' for platform '$platform'"
   LOG "[resolve_vulkan_sdk_environment] sdk config repos: $(jq -r '[.repos|to_entries|.[].key]|sort|join(";")' $config_file)"
 
   if [[ -z "$sdk_version" || $sdk_version == "null" ]] ; then
-    ERROR "[resolve_vulkan_sdk_environment] error resolving sdk version or retrieving config JSON from $remote_url_used ($(jq .message $config_file))" 
+    ERROR "[resolve_vulkan_sdk_environment] error resolving sdk version or retrieving config JSON from $remote_url_used ($(jq .message $config_file))"
   fi
-  
+
   (
     echo VULKAN_SDK_BUILD_DIR=$build_dir
     echo VULKAN_SDK=$VULKAN_SDK
@@ -82,7 +93,6 @@ function resolve_vulkan_sdk_environment() {
   LOG "=== sdk build env ================================================"
   LOG $build_dir/env
   LOG "=================================================================="
-  
 }
 
 function configure_sdk_prereqs() {
@@ -90,16 +100,20 @@ function configure_sdk_prereqs() {
   test -d $vulkan_build_tools/bin || mkdir -p $vulkan_build_tools/bin
   export PATH=$vulkan_build_tools/bin:$PATH
   case `uname -s` in
-    Darwin) ;;
-    Linux) 
+    Darwin) ;; # macOS (no specific aarch64 handling needed at the moment)
+    Linux)
       test -f /etc/os-release && . /etc/os-release
-      LOG "[configure_sdk_prereqs] VERSION_ID=$VERSION_ID" 
+      LOG "[configure_sdk_prereqs] OS_VERSION_ID=$VERSION_ID, ARCH=$(uname -m)"
+
+      # No aarch64-specific tool installation needed here
+      # because ubuntu-arm.yml already handles it
+
       case $VERSION_ID in
         # legacy builds using 16.04
         16.04) 
           apt-get -qq -o=Dpkg::Use-Pty=0 update
           apt-get -qq -o=Dpkg::Use-Pty=0 install -y jq curl git make build-essential ninja-build
-          curl -s -L https://github.com/Kitware/CMake/releases/download/v3.20.3/cmake-3.20.3-Linux-x86_64.tar.gz | tar --strip 1 -C $vulkan_build_tools -xzf -
+          curl -s -L https://github.com/Kitware/CMake/releases/download/v3.31.5/cmake-3.31.5-linux-x86_64.tar.gz | tar --strip 1 -C $vulkan_build_tools -xzf -
           hash
           cmake --version
         ;;
@@ -108,7 +122,7 @@ function configure_sdk_prereqs() {
       esac
     ;;
     MINGW*)
-     curl -L -o $vulkan_build_tools/ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
+     curl -L -o $vulkan_build_tools/ninja-win.zip https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
      unzip -d $vulkan_build_tools/bin $vulkan_build_tools/ninja-win.zip
     ;;
   esac
