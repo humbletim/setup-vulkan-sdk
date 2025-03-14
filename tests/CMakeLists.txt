@@ -15,7 +15,7 @@ endforeach()
 
 message(STATUS "")
 message(STATUS "|| VULKAN_SDK TEST APPLICATION ||")
-find_package(Vulkan REQUIRED FATAL_ERROR)
+find_package(Vulkan REQUIRED)
 add_executable(test_vulkan test_vulkan.c)
 target_link_libraries(test_vulkan PRIVATE Vulkan::Vulkan)
 

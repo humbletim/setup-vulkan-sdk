@@ -8,7 +8,7 @@ on:
         extra_tests:
           description: 'Enable additional CI tests'
           required: false
-          default: false
+          default: 'false'
         components:
           description: Vulkan SDK Components
           required: false
@@ -21,7 +21,7 @@ on:
         oses:
           description: 'Matrix OSes'
           required: true
-          default: '[ "ubuntu-latest", "windows-latest", "windows-2022", "macos-13", "macos-14" ]'
+          default: '[ "ubuntu-latest", "windows-latest", "windows-2022", "macos-13", "macos-latest" ]'
 jobs:
   setup-all-matrix:
     if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}
@@ -40,20 +40,21 @@ jobs:
       - name: Print runner configurations
         run: |
           echo runner os: ${{ runner.os }}, arch: ${{ runner.arch }}
-      - name: checkout seanmiddleditch/gha-setup-vsdevenv@v4
-        if: runner.os == 'Windows'
-        uses: actions/checkout@v4
-        with:
-          repository: seanmiddleditch/gha-setup-vsdevenv
-          ref: v4
-          path: gha-setup-vsdevenv
-      - name: execute seanmiddleditch/gha-setup-vsdevenv@v4
-        if: runner.os == 'Windows'
-        shell: cmd
-        working-directory: gha-setup-vsdevenv
-        run: |
-          npm install @actions/core
-          node dist/index.js | grep -v ::set-output
+      - uses: seanmiddleditch/gha-setup-vsdevenv@v5
+      # - name: checkout seanmiddleditch/gha-setup-vsdevenv@v4
+      #   if: runner.os == 'Windows'
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: seanmiddleditch/gha-setup-vsdevenv
+      #     ref: v4
+      #     path: gha-setup-vsdevenv
+      # - name: execute seanmiddleditch/gha-setup-vsdevenv@v4
+      #   if: runner.os == 'Windows'
+      #   shell: cmd
+      #   working-directory: gha-setup-vsdevenv
+      #   run: |
+      #     npm install @actions/core
+      #     node dist/index.js | grep -v ::set-output
       - name: Test Vulkan SDK Install
         shell: bash
         run: |
