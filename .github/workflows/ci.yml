@@ -1,6 +1,8 @@
 name: Setup
 on:
   push:
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
       inputs:
         extra_tests:
@@ -19,7 +21,7 @@ on:
         oses:
           description: 'Matrix OSes'
           required: true
-          default: '[ "ubuntu-latest", "windows-latest", "windows-2022", "macos-12" ]'
+          default: '[ "ubuntu-latest", "windows-latest", "windows-2022", "macos-13", "macos-14" ]'
 jobs:
   setup-all-matrix:
     if: ${{ github.event.inputs.extra_tests == 'true' || github.event.inputs.extra_tests == 'matrix' }}
@@ -35,6 +37,9 @@ jobs:
           vulkan-query-version: ${{ matrix.version }}
           vulkan-components: ${{ github.event.inputs.components }}
           vulkan-use-cache: true
+      - name: Print runner configurations
+        run: |
+          echo runner os: ${{ runner.os }}, arch: ${{ runner.arch }}
       - name: checkout seanmiddleditch/gha-setup-vsdevenv@v4
         if: runner.os == 'Windows'
         uses: actions/checkout@v4
